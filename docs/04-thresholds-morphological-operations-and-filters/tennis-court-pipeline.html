@@ -489,15 +489,15 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
   <div class="wrap">
     <div><h3>Try this first</h3><p>Drag the red margin from 10 up to 40. The pipeline never
       says it failed: it keeps returning two blobs. What changes is that the near court has
-      broken into pieces, so the second blob is now half a court. <b>Ask the class how they
-      would detect that automatically.</b></p></div>
+      broken into pieces, so the second blob is now half a court. <b>How would you detect
+      that automatically?</b></p></div>
     <div><h3>Why dilate at all</h3><p>Set the dilation kernel to 1. The red and green regions
       no longer touch, so their overlap is empty and there is nothing to find. <b>The dilation
       is not cosmetic: it is what makes two neighbouring regions share a boundary.</b></p></div>
-    <div><h3>The ethics ask</h3><p>Switch to <b>Blue hard court</b>. The margins were tuned
+    <div><h3>The uncomfortable one</h3><p>Switch to <b>Blue hard court</b>. The margins were tuned
       on one photograph of one surface. The code still runs, still returns two regions, and
       still draws them confidently, while the components collapse to a third of their size.
-      <b>Ask the class what else gets tuned on one population and shipped to everybody.</b></p></div>
+      <b>What else gets tuned on one population and shipped to everybody?</b></p></div>
     <div><h3>The trap that bites everyone</h3><p>The panel above is the bug from deck slide 18.
       Channels arrive as <code>uint8</code>, so <code>r - g</code> wraps around instead of
       going negative, and a comparison that should be false comes out true.</p></div>

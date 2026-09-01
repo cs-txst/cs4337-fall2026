@@ -397,9 +397,9 @@ a.card .ask b{color:var(--signal)}
 
     <div class="lead">
       <div>
-        <h4>How to use them in class</h4>
-        <p>Open one page at a time, not this index. Each is built to be shown on a projector
-          with one idea on screen, and every control resets by reloading.</p>
+        <h4>One idea per page</h4>
+        <p>Each page isolates a single step of the detector. Reloading a page puts every
+          control back to the value the lecture uses.</p>
       </div>
       <div>
         <h4>They run offline</h4>
@@ -422,9 +422,9 @@ a.card .ask b{color:var(--signal)}
           <p>Drag two pixel values past each other and watch the subtraction fall off the
             bottom of the range. Then see the same mistake made across a whole frame.</p>
           <div class="meta"><span class="tag slides">slide 6</span>
-            <span class="tag">the vote</span><span class="tag">uint8 against int16</span></div>
-          <span class="ask"><b>ASK:</b> what does <code>print(b - a)</code> show? Take the
-            vote before revealing anything.</span>
+            <span class="tag">predict first</span><span class="tag">uint8 against int16</span></div>
+          <span class="ask"><b>TRY:</b> what does <code>print(b - a)</code> show? Answer
+            before you click anything.</span>
         </a>
 
       </div>
@@ -440,7 +440,7 @@ a.card .ask b{color:var(--signal)}
             second tab shows the same arithmetic on a 5 by 5 patch of actual pixel values.</p>
           <div class="meta"><span class="tag slides">slides 7 to 10</span>
             <span class="tag">frame gap</span><span class="tag">min, max or mean</span></div>
-          <span class="ask"><b>ASK:</b> one difference shows the car twice. Which of the two
+          <span class="ask"><b>TRY:</b> one difference shows the car twice. Which of the two
             is the car in frame 30, and how would the computer know?</span>
         </a>
 
@@ -457,8 +457,8 @@ a.card .ask b{color:var(--signal)}
             <code>stats</code> array underneath. The second tab is a grid you label by hand.</p>
           <div class="meta"><span class="tag slides">slides 13 to 20, 29</span>
             <span class="tag">4 or 8 connected</span><span class="tag">the stats array</span></div>
-          <span class="ask"><b>ASK:</b> the deck picks threshold 10. What breaks at 1, and
-            what is lost at 100? Predict before dragging.</span>
+          <span class="ask"><b>TRY:</b> the deck picks threshold 10. What breaks at 1, and
+            what is lost at 100? Predict before you drag.</span>
         </a>
 
         <a class="card" href="box-center-vs-centroid.html">
@@ -467,7 +467,7 @@ a.card .ask b{color:var(--signal)}
             slide 27 arithmetic written out underneath, then check both on the real car.</p>
           <div class="meta"><span class="tag slides">slides 21 to 28</span>
             <span class="tag">draw your own</span><span class="tag">measured distance</span></div>
-          <span class="ask"><b>ASK:</b> which center should the tracker follow, and which one
+          <span class="ask"><b>TRY:</b> which center should the tracker follow, and which one
             should be drawn on screen? They are not the same answer.</span>
         </a>
 
@@ -479,12 +479,12 @@ a.card .ask b{color:var(--signal)}
 
 <footer class="pagefoot">
   <div class="wrap">
-    <div><h3>A suggested order</h3><p>The wraparound page as a two-minute opener, then Two
-      Ghosts for the core of the lecture. Finding the Car and Two Different Centers belong
-      after the class has seen a thresholded mask.</p></div>
-    <div><h3>If you only show one</h3><p>Two Ghosts, One Car. It carries slides 7 through 10,
-      it is the one place the three-frame minimum stops being a formula, and its second tab
-      answers slide 9 without anyone copying numbers off a projector.</p></div>
+    <div><h3>An order that works</h3><p>The wraparound page first, since everything after it
+      depends on subtracting two frames correctly. Then Two Ghosts. Finding the Car and Two
+      Different Centers both assume you have already seen a thresholded mask.</p></div>
+    <div><h3>The central one</h3><p>Two Ghosts, One Car covers slides 7 through 10. It is the
+      one place the three-frame minimum stops being a formula, and its second tab works
+      through slide 9 on real pixel values.</p></div>
     <div><h3>Editing them</h3><p>Each file is standalone HTML with its CSS, its JavaScript and
       its video frames inline. Open one in any editor, change a number, reload. Nothing needs
       building and nothing needs installing.</p></div>

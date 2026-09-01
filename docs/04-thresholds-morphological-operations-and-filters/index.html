@@ -402,9 +402,9 @@ a.card .ask b{color:var(--signal)}
 
     <div class="lead">
       <div>
-        <h4>How to use them in class</h4>
-        <p>Open one page at a time, not this index. Each is built to be shown on a projector
-          with one idea on screen, and every control resets by reloading.</p>
+        <h4>One idea per page</h4>
+        <p>Each page isolates a single idea from the lecture. Reloading a page puts every
+          control back to the value the lecture uses.</p>
       </div>
       <div>
         <h4>They run offline</h4>
@@ -429,8 +429,8 @@ a.card .ask b{color:var(--signal)}
             into the valley.</p>
           <div class="meta"><span class="tag slides">slides 5 to 10, 63</span>
             <span class="tag">5 THRESH modes</span><span class="tag">Otsu sweep</span></div>
-          <span class="ask"><b>ASK:</b> where exactly should the cut go? Let three students pick
-            before showing Otsu's answer.</span>
+          <span class="ask"><b>TRY:</b> where exactly should the cut go? Commit to a value
+            before you look at Otsu's answer.</span>
         </a>
 
         <a class="card" href="adaptive-threshold.html">
@@ -439,8 +439,8 @@ a.card .ask b{color:var(--signal)}
             put it, adaptive holds, and a single row of pixels shows why.</p>
           <div class="meta"><span class="tag slides">slides 7, 8, 22</span>
             <span class="tag">blockSize</span><span class="tag">C</span></div>
-          <span class="ask"><b>ASK:</b> can we rescue this by choosing a better T? Try, then let
-            Otsu try, then move on.</span>
+          <span class="ask"><b>TRY:</b> can a better T rescue this? Hunt for one, then let
+            Otsu hunt, before deciding it cannot be done.</span>
         </a>
 
       </div>
@@ -456,7 +456,7 @@ a.card .ask b{color:var(--signal)}
             play one pass at a time, so the intermediate result is visible rather than implied.</p>
           <div class="meta"><span class="tag slides">slides 11 to 16</span>
             <span class="tag">square or cross</span><span class="tag">step through</span></div>
-          <span class="ask"><b>ASK:</b> if erode and dilate were inverses, what would opening
+          <span class="ask"><b>TRY:</b> if erode and dilate were inverses, what would opening
             do? Predict, then play it.</span>
         </a>
 
@@ -466,8 +466,8 @@ a.card .ask b{color:var(--signal)}
             Includes the uint8 wraparound widget and a surface the margins were never tuned for.</p>
           <div class="meta"><span class="tag slides">slides 17 to 21</span>
             <span class="tag">uint8 trap</span><span class="tag">ethics</span></div>
-          <span class="ask"><b>ETHICS ASK:</b> these numbers were tuned on one photo. What else
-            gets tuned on one population and shipped to everybody?</span>
+          <span class="ask"><b>TRY:</b> these numbers were tuned on one photo. What else gets
+            tuned on one population and shipped to everybody?</span>
         </a>
 
       </div>
@@ -483,8 +483,8 @@ a.card .ask b{color:var(--signal)}
             products, and the same kernel filtering a photograph live.</p>
           <div class="meta"><span class="tag slides">slides 30 to 35, 39, 53 to 54</span>
             <span class="tag">11 presets</span><span class="tag">correlation or convolution</span></div>
-          <span class="ask"><b>ASK:</b> which way will the picture move with the Shift kernel?
-            Then flip to convolution and ask again.</span>
+          <span class="ask"><b>TRY:</b> which way will the picture move with the Shift kernel?
+            Then flip to convolution and answer again.</span>
         </a>
 
         <a class="card" href="border-modes.html">
@@ -493,8 +493,8 @@ a.card .ask b{color:var(--signal)}
             different answer, and the difference panel shows exactly where it shows up.</p>
           <div class="meta"><span class="tag slides">slide 39</span>
             <span class="tag">5 modes</span><span class="tag">padded grid</span></div>
-          <span class="ask"><b>ASK:</b> where in the output can the border mode possibly matter?
-            Measure it before saying.</span>
+          <span class="ask"><b>TRY:</b> where in the output can the border mode possibly matter?
+            Measure it before you answer.</span>
         </a>
 
         <a class="card" href="separability.html">
@@ -503,8 +503,8 @@ a.card .ask b{color:var(--signal)}
             count of multiplies: 225 against 30, growing to 961 against 62.</p>
           <div class="meta"><span class="tag slides">slide 43</span>
             <span class="tag">multiply counter</span><span class="tag">identity check</span></div>
-          <span class="ask"><b>ASK:</b> what is missing from the middle picture? Look before
-            revealing the second pass.</span>
+          <span class="ask"><b>TRY:</b> what is missing from the middle picture? Look hard
+            before you run the second pass.</span>
         </a>
 
         <a class="card" href="gaussian-kernel.html">
@@ -513,7 +513,7 @@ a.card .ask b{color:var(--signal)}
             watch the bell flatten into a plateau when the window is too small.</p>
           <div class="meta"><span class="tag slides">slides 40 to 42</span>
             <span class="tag">3D surface</span><span class="tag">the 6 sigma rule</span></div>
-          <span class="ask"><b>ASK:</b> what is wrong with asking for sigma 6 in a 15 by 15
+          <span class="ask"><b>TRY:</b> what is wrong with asking for sigma 6 in a 15 by 15
             window? The kernel will not tell you it failed.</span>
         </a>
 
@@ -523,8 +523,8 @@ a.card .ask b{color:var(--signal)}
             One 255 among eight values near 90 is the entire lesson.</p>
           <div class="meta"><span class="tag slides">slide 45</span>
             <span class="tag">neighbourhood inspector</span><span class="tag">two noise types</span></div>
-          <span class="ask"><b>ASK:</b> is median simply the better filter? Switch the noise
-            type before anyone commits.</span>
+          <span class="ask"><b>TRY:</b> is median simply the better filter? Switch the noise
+            type before you commit to an answer.</span>
         </a>
 
       </div>
@@ -540,8 +540,8 @@ a.card .ask b{color:var(--signal)}
             a person or a field of confetti. Noise and motion are both sliders.</p>
           <div class="meta"><span class="tag slides">slides 46, 47</span>
             <span class="tag">blur or no blur</span><span class="tag">false alarm count</span></div>
-          <span class="ask"><b>ASK:</b> can we fix the noisy version by raising the threshold
-            instead? Try it until the person disappears too.</span>
+          <span class="ask"><b>TRY:</b> can a higher threshold fix the noisy version instead
+            of the blur? Raise it until the person disappears too.</span>
         </a>
 
       </div>
@@ -552,12 +552,12 @@ a.card .ask b{color:var(--signal)}
 
 <footer class="pagefoot">
   <div class="wrap">
-    <div><h3>A suggested order</h3><p>Threshold Explorer, then Shadow on the Page, then the
-      Morphology Sandbox before the tennis court. On the filtering day: Kernel Playground
-      first, then whichever of the four supporting pages the room needs.</p></div>
-    <div><h3>If you only show one</h3><p>The Kernel Playground. It serves the most slides and
-      carries the one idea the class will meet again in edge detection, in feature descriptors
-      and in every convolutional network after that.</p></div>
+    <div><h3>An order that works</h3><p>Threshold Explorer, then Shadow on the Page, then the
+      Morphology Sandbox before the tennis court. For the filtering half: Kernel Playground
+      first, then whichever of the four supporting pages the idea needs.</p></div>
+    <div><h3>The central one</h3><p>The Kernel Playground. It serves the most slides and
+      carries the one idea that comes back in edge detection, in feature descriptors and in
+      every convolutional network after that.</p></div>
     <div><h3>Editing them</h3><p>Each file is standalone HTML with its CSS and JavaScript
       inline. Open one in any editor, change a number, reload. Nothing needs building and
       nothing needs installing.</p></div>

@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none !important}
+.up{
+  display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  text-decoration:none;
+}
+.up:hover{color:var(--accent)}
+</style>
+<title>Off the Edge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDF1F6;
+  --ink:#16233A;
+  --ink-2:#4A5A72;
+  --ink-3:#7A889C;
+  --rule:#D3DBE6;
+  --rule-2:#BCC7D6;
+  --accent:#2F6FB5;
+  --accent-ink:#1F3763;
+  --accent-soft:#DCE6F1;
+  --warm:#C2542F;
+  --warm-soft:#F6E3DC;
+  --signal:#C8801A;
+  --signal-soft:#FBEBD2;
+  --shadow:0 1px 2px rgba(22,35,58,.06), 0 8px 24px -12px rgba(22,35,58,.22);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101823;
+    --surface:#17202D;
+    --surface-2:#1E2937;
+    --ink:#E6EDF6;
+    --ink-2:#A9B7C9;
+    --ink-3:#7A889C;
+    --rule:#2A3646;
+    --rule-2:#3A4859;
+    --accent:#6FA8E0;
+    --accent-ink:#A9CCEE;
+    --accent-soft:#1D3149;
+    --warm:#E08C63;
+    --warm-soft:#3A2620;
+    --signal:#E0A83F;
+    --signal-soft:#3B2E14;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101823;
+  --surface:#17202D;
+  --surface-2:#1E2937;
+  --ink:#E6EDF6;
+  --ink-2:#A9B7C9;
+  --ink-3:#7A889C;
+  --rule:#2A3646;
+  --rule-2:#3A4859;
+  --accent:#6FA8E0;
+  --accent-ink:#A9CCEE;
+  --accent-soft:#1D3149;
+  --warm:#E08C63;
+  --warm-soft:#3A2620;
+  --signal:#E0A83F;
+  --signal-soft:#3B2E14;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace}
+
+/* ---------- header ---------- */
+.pagehead{
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+  padding:22px 28px 20px;
+}
+.pagehead .wrap{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 32px}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+  display:block;margin-bottom:6px;
+}
+.pagehead h1{
+  font-size:31px;line-height:1.1;font-weight:600;margin:0;
+  letter-spacing:-.018em;text-wrap:balance;
+}
+.pagehead p{margin:0;color:var(--ink-2);max-width:56ch;font-size:14.5px;flex:1 1 340px}
+
+/* ---------- shell ---------- */
+main{
+  max-width:1400px;margin:0 auto;padding:22px 28px 40px;
+  display:grid;grid-template-columns:302px minmax(0,1fr);gap:22px;align-items:start;
+}
+@media (max-width:1020px){ main{grid-template-columns:minmax(0,1fr)} }
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+}
+.panel > h2{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-3);
+  margin:0;padding:12px 16px 10px;border-bottom:1px solid var(--rule);
+}
+.panel .body{padding:16px}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+@media (max-width:1020px){ .rail{position:static} }
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > label, .flabel{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;
+}
+
+.seg{display:flex;border:1px solid var(--rule-2);border-radius:5px;overflow:hidden}
+.seg button{
+  flex:1;appearance:none;border:0;background:var(--surface);
+  color:var(--ink-2);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;
+  border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+
+select, input[type="number"]{
+  font:inherit;font-family:"IBM Plex Mono", monospace;font-size:13px;
+  color:var(--ink);background:var(--surface);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 8px;width:100%;
+}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+/* ---------- kernel matrix ---------- */
+.kwrap{display:flex;justify-content:center;padding:2px 0 4px}
+.kgrid{display:grid;gap:5px}
+.kcell{
+  width:52px;height:42px;
+  border:1px solid var(--rule-2);border-radius:4px;
+  background:var(--surface-2);
+  font-family:"IBM Plex Mono", monospace;font-size:14px;font-weight:500;
+  color:var(--ink);text-align:center;
+  padding:0;
+  font-variant-numeric:tabular-nums;
+}
+.kgrid.k5 .kcell{width:38px;height:34px;font-size:12.5px}
+.kcell:focus{outline:2px solid var(--accent);outline-offset:1px}
+.kcell.pos{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.kcell.neg{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.kcell.zero{color:var(--ink-3)}
+.kcell.center{box-shadow:inset 0 0 0 2px var(--signal)}
+
+.presets{display:flex;flex-wrap:wrap;gap:5px}
+.presets button{
+  appearance:none;font:inherit;font-size:12.5px;
+  background:var(--surface-2);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:20px;padding:4px 11px;cursor:pointer;
+}
+.presets button:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+.presets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+.divline{
+  display:flex;align-items:baseline;justify-content:center;gap:8px;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;color:var(--ink-2);
+  padding-top:2px;
+}
+.divline strong{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.divline input{width:66px;text-align:center}
+
+.note{font-size:12.5px;line-height:1.45;color:var(--ink-3);margin:8px 0 0}
+.note b{color:var(--ink-2);font-weight:600}
+
+/* ---------- stage ---------- */
+.stage{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule)}
+.tabs button{
+  appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  font:inherit;font-size:14.5px;font-weight:500;color:var(--ink-3);
+  padding:8px 16px;cursor:pointer;margin-bottom:-1px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tabs .anchor{
+  margin-left:auto;align-self:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;color:var(--ink-3);
+  letter-spacing:.06em;padding-right:4px;
+}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btn{
+  appearance:none;font:inherit;font-size:13.5px;font-weight:500;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 14px;cursor:pointer;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:focus-visible, .presets button:focus-visible, .seg button:focus-visible, .tabs button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px
+}
+.spacer{flex:1 1 auto}
+.slider{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.slider input{width:110px}
+
+/* ---------- stepper grids ---------- */
+.gridrow{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.gridbox{display:flex;flex-direction:column;gap:7px}
+.gridcap{
+  font-family:"IBM Plex Mono", monospace;font-size:12px;color:var(--ink-2);
+  display:flex;align-items:baseline;gap:8px;
+}
+.gridcap em{font-style:normal;color:var(--ink-3);font-size:11px}
+.pgrid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);width:max-content}
+.pc{
+  width:31px;height:25px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;
+  font-variant-numeric:tabular-nums;
+  background:var(--surface);color:var(--ink-2);position:relative;
+}
+.pc.pad{opacity:.48;font-style:italic}
+.pc.mid{background:#9AA6B5;color:#FFFFFF}
+.pc.on{background:#3E4C5E;color:#fff;font-weight:500}
+:root[data-theme="dark"] .pc.on{background:#5C6E85}
+:root[data-theme="dark"] .pc.mid{background:#7F8D9E}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .pc.on{background:#5C6E85}
+  :root:not([data-theme="light"]) .pc.mid{background:#7F8D9E}
+}
+.pc.win{box-shadow:inset 0 0 0 2px var(--signal);z-index:2}
+.pc.cur{box-shadow:inset 0 0 0 2px var(--accent);z-index:3}
+.pc.done{color:var(--ink)}
+.pc.empty{background:var(--surface-2);color:transparent}
+.gwrap{overflow-x:auto;padding-bottom:2px}
+
+/* ---------- neighborhood readout ---------- */
+.readout{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;
+}
+.mini{display:flex;flex-direction:column;gap:5px;align-items:center}
+.mini .mlab{
+  font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mgrid{display:grid;gap:2px}
+.mcell{
+  min-width:30px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--surface);border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+  padding:0 3px;
+}
+.mgrid.k5 .mcell{min-width:25px;height:19px;font-size:9.5px}
+.mcell.pos{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent-soft)}
+.mcell.neg{color:var(--warm);background:var(--warm-soft);border-color:var(--warm-soft)}
+.mcell.padded{font-style:italic;color:var(--ink-3);background:var(--surface-2)}
+.op{font-family:"IBM Plex Mono", monospace;font-size:17px;color:var(--ink-3);align-self:center;padding-top:12px}
+.sumout{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.sumout .slab{font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sumout .sval{font-family:"IBM Plex Mono", monospace;font-size:22px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.sumout .sexp{font-family:"IBM Plex Mono", monospace;font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- playground ---------- */
+.imgrow{display:flex;flex-wrap:wrap;gap:20px}
+.imgbox{display:flex;flex-direction:column;gap:7px}
+.imgbox canvas{
+  display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface-2);
+  image-rendering:pixelated;max-width:100%;height:auto;cursor:crosshair;
+}
+.optrow{display:flex;flex-wrap:wrap;gap:14px}
+.optrow .field{margin-bottom:0;min-width:150px}
+
+/* ---------- code bar ---------- */
+.codebar{
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.codebar header{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.codebar header span{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.codebar pre{
+  margin:0;padding:14px 16px;overflow-x:auto;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;line-height:1.6;
+  color:var(--ink);
+}
+.codebar .kw{color:var(--accent)}
+.codebar .cm{color:var(--ink-3);font-style:italic}
+.codebar .num{color:var(--warm)}
+
+/* ---------- footer ---------- */
+.pagefoot{border-top:1px solid var(--rule);background:var(--surface);margin-top:8px}
+.pagefoot .wrap{max-width:1400px;margin:0 auto;padding:22px 28px 30px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px 32px}
+.pagefoot h3{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 7px;font-weight:600;
+}
+.pagefoot p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.pagefoot code{font-family:"IBM Plex Mono", monospace;font-size:12.5px;color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+
+.padgrid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);width:max-content}
+.pcell{
+  width:32px;height:26px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--surface);color:var(--ink-2);
+}
+.pcell.invented{background:var(--signal-soft);color:var(--signal);font-style:italic}
+.pcell.win{box-shadow:inset 0 0 0 2px var(--accent);z-index:2}
+.pcell.origin{box-shadow:inset 0 0 0 2px var(--warm);z-index:3}
+.gwrap{overflow-x:auto}
+.imgpair{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.imgpair canvas{display:block;width:100%;height:auto;border:1px solid var(--rule);
+  border-radius:4px;background:var(--surface-2)}
+.modetable{width:100%;border-collapse:collapse;font-size:13px}
+.modetable th,.modetable td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule)}
+.modetable th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.modetable code{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent)}
+.modetable tr.live td{background:var(--accent-soft)}
+.modetable tr.live code{color:var(--accent-ink);font-weight:600}
+</style>
+</head>
+<body>
+<header class="pagehead">
+  <div class="wrap">
+    <div>
+      <a class="up" href="index.html">&#8592; Lecture 04 demos</a>
+      <span class="eyebrow">CS 4337 / Lecture 04 / Filtering</span>
+      <h1>Off the Edge</h1>
+    </div>
+    <p>A 3 x 3 kernel centred on the top-left pixel needs values that do not exist. Every border mode is a different answer to that, and the answer is visible in the output.</p>
+  </div>
+</header>
+
+<main>
+  <div class="rail">
+
+    <section class="panel">
+      <h2>Border mode</h2>
+      <div class="body">
+        <div class="field">
+          <label for="mode">What to invent</label>
+          <select id="mode">
+            <option value="reflect101">BORDER_REFLECT_101 (the default)</option>
+            <option value="reflect">BORDER_REFLECT</option>
+            <option value="replicate">BORDER_REPLICATE</option>
+            <option value="wrap">BORDER_WRAP</option>
+            <option value="constant">BORDER_CONSTANT</option>
+          </select>
+        </div>
+        <div class="field" id="cvalfield" hidden>
+          <label for="cval">borderValue = <b id="cvalv" class="mono">0</b></label>
+          <input type="range" id="cval" min="0" max="255" value="0">
+        </div>
+        <p class="note" id="modenote"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>The kernel</h2>
+      <div class="body">
+        <div class="field">
+          <label>Size</label>
+          <div class="seg" id="ksize">
+            <button data-v="3" aria-pressed="true">3 x 3</button>
+            <button data-v="5" aria-pressed="false">5 x 5</button>
+            <button data-v="9" aria-pressed="false">9 x 9</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="pos">Kernel position along the top row</label>
+          <input type="range" id="pos" min="0" max="9" value="0">
+        </div>
+        <p class="note">The window is sitting on the top-left corner of the image. The tinted
+          cells are <b>not real pixels</b>. Something has to put numbers there before the
+          multiply can happen.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="stage">
+
+    <div class="plotbox">
+      <div class="gridcap">the top-left corner of the image, padded
+        <em>tinted cells are invented</em></div>
+      <div class="gwrap"><div class="padgrid" id="pad"></div></div>
+    </div>
+
+    <section class="panel">
+      <h2>What each mode invents</h2>
+      <div class="body" style="padding:0">
+        <div class="gwrap">
+          <table class="modetable">
+            <thead><tr><th>mode</th><th>the invented row above row 0 is</th><th>cost</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="imgpair">
+      <div class="plotbox">
+        <div class="gridcap">input</div>
+        <canvas id="src"></canvas>
+      </div>
+      <div class="plotbox">
+        <div class="gridcap">blurred with a <b id="kcap">9 x 9</b> box, this border mode</div>
+        <canvas id="dst"></canvas>
+      </div>
+      <div class="plotbox">
+        <div class="gridcap">difference from the default mode <em>amplified 6x</em></div>
+        <canvas id="diff"></canvas>
+      </div>
+    </div>
+
+    <p class="note" id="verdict" style="font-size:13.5px"></p>
+
+    <div class="codebar">
+      <header><span>the same thing, in the notebook</span>
+        <button class="btn" id="copy" style="padding:3px 10px;font-size:12px;margin-left:auto">Copy</button>
+      </header>
+      <pre id="code"></pre>
+    </div>
+
+  </div>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div><h3>Try this first</h3><p>Set the kernel to 9 x 9 and switch to
+      <code>BORDER_CONSTANT</code>. A dark frame appears around the whole picture, because the
+      filter is averaging real pixels with a border of black that was never photographed.</p></div>
+    <div><h3>Why the default is what it is</h3><p><code>BORDER_REFLECT_101</code> mirrors without
+      repeating the edge pixel itself. That keeps the invented values statistically like their
+      neighbours and adds no artificial edge for a gradient filter to find.</p></div>
+    <div><h3>The one that surprises people</h3><p><code>BORDER_WRAP</code> pulls in the opposite
+      side of the image. It is right for genuinely periodic data and wrong for photographs,
+      where it smears the sky into the ground.</p></div>
+    <div><h3>Why this matters later</h3><p>Every convolution layer in a CNN makes this same
+      choice, usually zero padding, which is <code>BORDER_CONSTANT</code> with value 0. The dark
+      frame you can see here is the reason padding is a design decision and not a detail.</p></div>
+  </div>
+</footer>
+
+<script>
+var IMAGES = {"church": "data:image/jpeg;base64,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"};
+/* ------------------------------------------------------------------
+   Shared helpers for the CS 4337 Lecture 04 interactive pages.
+   Plain ES5 so the files run from file:// in any browser in the room.
+   ------------------------------------------------------------------ */
+
+function el(id) { return document.getElementById(id); }
+
+function mk(tag, cls, txt) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined && txt !== null) n.textContent = txt;
+  return n;
+}
+
+/* ---------- images ---------- */
+
+/* Decodes the inlined base64 assets, then hands back {w,h,rgb,gray} per key.
+   gray is a Float32Array so filter output can go negative before clipping. */
+function loadImages(keys, done) {
+  var out = {}, pending = keys.length;
+  if (!pending) return done(out);
+  keys.forEach(function (k) {
+    var im = new Image();
+    im.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = im.width; c.height = im.height;
+      var g = c.getContext("2d");
+      g.drawImage(im, 0, 0);
+      var d = g.getImageData(0, 0, c.width, c.height).data;
+      var n = c.width * c.height;
+      var gray = new Float32Array(n), rgb = new Uint8ClampedArray(d);
+      for (var i = 0; i < n; i++) {
+        gray[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      }
+      out[k] = { w: c.width, h: c.height, gray: gray, rgb: rgb };
+      if (--pending === 0) done(out);
+    };
+    im.src = IMAGES[k];
+  });
+}
+
+/* Paints a single-channel array. clip=true rounds into 0..255 the way uint8
+   storage would; clip=false shifts by +128 so negatives stay visible. */
+function putGray(cv, arr, w, h, clip) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = clip === false ? arr[i] + 128 : arr[i];
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+function putRGB(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h);
+  im.data.set(arr);
+  g.putImageData(im, 0, 0);
+}
+
+/* Paints a 0/1 mask: 1 -> white, 0 -> black, matching a binary cv image. */
+function putMask(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = arr[i] ? 255 : 0;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+/* ---------- borders ---------- */
+
+/* One index, folded back into 0..n-1 by the chosen border rule.
+   Returns -1 for BORDER_CONSTANT, meaning "there is no pixel, use the value". */
+function clampIndex(i, n, mode) {
+  if (i >= 0 && i < n) return i;
+  if (n === 1) return 0;
+  switch (mode) {
+    case "constant":  return -1;
+    case "replicate": return i < 0 ? 0 : n - 1;
+    case "wrap":      return ((i % n) + n) % n;
+    case "reflect":
+      while (i < 0 || i >= n) { if (i < 0) i = -i - 1; if (i >= n) i = 2 * n - i - 1; }
+      return i;
+    default: /* reflect101, filter2D's own default */
+      while (i < 0 || i >= n) { if (i < 0) i = -i; if (i >= n) i = 2 * n - i - 2; }
+      return i;
+  }
+}
+
+/* ---------- filtering ---------- */
+
+/* Correlation, which is what cv.filter2D actually computes. Set flip to get
+   true convolution. k is a flat array of side*side weights. */
+function correlate(src, w, h, k, side, mode, flip, constVal) {
+  var r = side >> 1, out = new Float32Array(w * h), cv0 = constVal || 0;
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var s = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) {
+          var sx = clampIndex(x + dx, w, mode);
+          var val = (sy < 0 || sx < 0) ? cv0 : src[sy * w + sx];
+          var u = flip ? -dy : dy, v = flip ? -dx : dx;
+          s += val * k[(u + r) * side + (v + r)];
+        }
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* A separable pass costs 2k multiplies per pixel instead of k*k. */
+function separable(src, w, h, k1, mode) {
+  var side = k1.length, r = side >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += src[y * w + clampIndex(x + d, w, mode)] * k1[d + r];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * k1[d + r];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+function medianFilter(src, w, h, side, mode) {
+  var r = side >> 1, out = new Float32Array(w * h), buf = new Float32Array(side * side);
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var n = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) buf[n++] = src[sy * w + clampIndex(x + dx, w, mode)];
+      }
+      var a = Array.prototype.slice.call(buf, 0, n).sort(function (p, q) { return p - q; });
+      out[y * w + x] = a[n >> 1];
+    }
+  }
+  return out;
+}
+
+/* cv.getGaussianKernel: a 1D kernel, normalised to sum 1. */
+function gaussian1D(side, sigma) {
+  var r = side >> 1, k = new Float32Array(side), sum = 0;
+  if (!sigma) sigma = 0.3 * ((side - 1) * 0.5 - 1) + 0.8;   // OpenCV's default
+  for (var i = 0; i < side; i++) {
+    k[i] = Math.exp(-((i - r) * (i - r)) / (2 * sigma * sigma));
+    sum += k[i];
+  }
+  for (i = 0; i < side; i++) k[i] /= sum;
+  return k;
+}
+
+/* ---------- histogram ---------- */
+
+function histogram(gray) {
+  var h = new Float64Array(256);
+  for (var i = 0; i < gray.length; i++) {
+    var v = Math.round(gray[i]);
+    h[v < 0 ? 0 : v > 255 ? 255 : v]++;
+  }
+  return h;
+}
+
+/* Within-class variance for every T, which is what Otsu minimises.
+   Returns {v, t, w0, m0, m1} with v[t] = w0*s0^2 + w1*s1^2. */
+function otsuCurve(hist) {
+  var total = 0, sumAll = 0, i;
+  for (i = 0; i < 256; i++) { total += hist[i]; sumAll += i * hist[i]; }
+  var v = new Float64Array(256), w0 = new Float64Array(256),
+      m0 = new Float64Array(256), m1 = new Float64Array(256);
+  var c0 = 0, s0 = 0, best = -1, bestV = Infinity;
+  var varAll = 0;
+  for (i = 0; i < 256; i++) varAll += hist[i] * Math.pow(i - sumAll / total, 2);
+  varAll /= total;
+  for (var t = 0; t < 256; t++) {
+    c0 += hist[t]; s0 += t * hist[t];
+    var c1 = total - c0, mu0 = c0 ? s0 / c0 : 0, mu1 = c1 ? (sumAll - s0) / c1 : 0;
+    w0[t] = c0 / total; m0[t] = mu0; m1[t] = mu1;
+    /* between-class variance is the cheap half; the rest is what is left. */
+    var between = (c0 / total) * (c1 / total) * (mu0 - mu1) * (mu0 - mu1);
+    v[t] = varAll - between;
+    if (c0 && c1 && v[t] < bestV) { bestV = v[t]; best = t; }
+  }
+  return { v: v, t: best, w0: w0, m0: m0, m1: m1, varAll: varAll };
+}
+
+/* ---------- theme-aware canvas drawing ---------- */
+
+var THEME = {};
+function readTheme() {
+  var cs = getComputedStyle(document.documentElement);
+  ["ink", "ink-2", "ink-3", "rule", "rule-2", "accent", "accent-ink", "accent-soft",
+   "warm", "warm-soft", "signal", "signal-soft", "surface", "surface-2", "paper"
+  ].forEach(function (k) { THEME[k] = cs.getPropertyValue("--" + k).trim(); });
+  return THEME;
+}
+
+function onThemeChange(cb) {
+  readTheme();
+  if (window.matchMedia) {
+    var m = window.matchMedia("(prefers-color-scheme: dark)");
+    var h = function () { readTheme(); cb(); };
+    if (m.addEventListener) m.addEventListener("change", h);
+    else if (m.addListener) m.addListener(h);
+  }
+}
+
+/* Canvases are sized in CSS pixels but drawn at device resolution, so the
+   axis text on a projector stays sharp. */
+function fitCanvas(cv, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  cv.style.width = w + "px"; cv.style.height = h + "px";
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  var g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  return g;
+}
+
+/* ---------- code panel ---------- */
+
+var PY_KW = /\b(import|as|for|in|if|else|elif|return|def|not|and|or|True|False|None|while)\b/g;
+
+function hl(code) {
+  var s = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  s = s.replace(/(#[^\n]*)/g, '<span class="cm">$1</span>');
+  s = s.replace(/('[^']*')/g, '<span class="num">$1</span>');
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  s = s.replace(PY_KW, '<span class="kw">$1</span>');
+  s = s.replace(/\b(cv|np|plt)\./g, '<span class="kw">$1</span>.');
+  return s;
+}
+
+/* Every page prints the OpenCV call its controls stand for. */
+function codePanel(id, code) { el(id).innerHTML = hl(code); }
+
+function wireCopy(btn, getText) {
+  btn.addEventListener("click", function () {
+    var t = getText();
+    var ok = function () {
+      var old = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(ok, function () {});
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+}
+
+/* ---------- small utilities ---------- */
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+function fmt(v, n) {
+  if (!isFinite(v)) return "-";
+  var p = Math.pow(10, n === undefined ? 1 : n);
+  return String(Math.round(v * p) / p);
+}
+
+/* A labelled slider that keeps its readout in sync. */
+function bindSlider(inputId, outId, fn, format) {
+  var inp = el(inputId), out = el(outId);
+  var run = function () {
+    if (out) out.textContent = format ? format(+inp.value) : inp.value;
+    fn(+inp.value);
+  };
+  inp.addEventListener("input", run);
+  return run;
+}
+
+
+var S = { mode: "reflect101", k: 3, pos: 0, cval: 0 };
+var img = null;
+
+/* A small patch of real pixel values, used for the padded-grid illustration.
+   Real numbers from the photograph, so the reflection is checkable by eye. */
+var PATCH_W = 10, PATCH_H = 6, patch = null;
+
+var MODE_NOTE = {
+  reflect101: "Mirror across the edge pixel, without repeating it: <b>gfedcb | abcdefgh</b>. This is what filter2D, blur and GaussianBlur use unless you say otherwise.",
+  reflect:    "Mirror including the edge pixel: <b>fedcba | abcdefgh</b>. The first value is duplicated.",
+  replicate:  "Repeat the edge pixel outward: <b>aaaaaa | abcdefgh</b>. Cheap, and it flattens any gradient at the edge.",
+  wrap:       "Take the values from the far side: <b>cdefgh | abcdefgh</b>. Correct for periodic signals, wrong for photographs. <b>filter2D refuses this one</b>, so it has to be done with copyMakeBorder.",
+  constant:   "Use one fixed value everywhere outside: <b>kkkkkk | abcdefgh</b>. Simple, and it invents an edge that was never in the scene."
+};
+
+var MODE_ROWS = [
+  ["BORDER_REFLECT_101", "row 1, mirrored (the edge row is not repeated)", "the default, no artificial edge"],
+  ["BORDER_REFLECT", "row 0, mirrored (the edge row is repeated)", "one duplicated row"],
+  ["BORDER_REPLICATE", "row 0, copied", "flattens the gradient at the edge"],
+  ["BORDER_WRAP", "the last row of the image", "content from the opposite side"],
+  ["BORDER_CONSTANT", "borderValue, the same number everywhere", "a visible frame in the output"]
+];
+var MODE_KEYS = ["reflect101", "reflect", "replicate", "wrap", "constant"];
+
+function buildTable() {
+  var tb = el("tbody");
+  tb.innerHTML = "";
+  MODE_ROWS.forEach(function (r, i) {
+    var tr = mk("tr");
+    if (MODE_KEYS[i] === S.mode) tr.className = "live";
+    var c0 = mk("td"); c0.appendChild(mk("code", null, r[0])); tr.appendChild(c0);
+    tr.appendChild(mk("td", null, r[1]));
+    tr.appendChild(mk("td", null, r[2]));
+    tb.appendChild(tr);
+  });
+}
+
+/* ---------- the padded grid ---------- */
+
+function drawPad() {
+  var r = S.k >> 1, pad = Math.min(r, 4);
+  var box = el("pad");
+  box.innerHTML = "";
+  var cols = PATCH_W + pad, rows = PATCH_H + pad;
+  box.style.gridTemplateColumns = "repeat(" + cols + ", 32px)";
+
+  for (var gy = -pad; gy < PATCH_H; gy++) {
+    for (var gx = -pad; gx < PATCH_W; gx++) {
+      var sx = clampIndex(gx, PATCH_W, S.mode);
+      var sy = clampIndex(gy, PATCH_H, S.mode);
+      var outside = gx < 0 || gy < 0;
+      var v;
+      if (sx < 0 || sy < 0) v = S.cval;                 /* BORDER_CONSTANT */
+      else v = patch[sy * PATCH_W + sx];
+
+      var c = mk("div", "pcell" + (outside ? " invented" : ""), String(Math.round(v)));
+      /* the window sits on row 0, at the chosen column */
+      var inWin = gy >= 0 - r && gy <= 0 + r && gx >= S.pos - r && gx <= S.pos + r;
+      if (inWin) c.className += " win";
+      if (gy === 0 && gx === S.pos) c.className += " origin";
+      box.appendChild(c);
+    }
+  }
+}
+
+/* ---------- the pictures ---------- */
+
+function boxK(k) {
+  var a = new Float32Array(k);
+  for (var i = 0; i < k; i++) a[i] = 1 / k;
+  return a;
+}
+
+function render() {
+  var k = boxK(S.k);
+  var mine = separableConst(img.gray, img.w, img.h, k, S.mode, S.cval);
+  var ref  = separableConst(img.gray, img.w, img.h, k, "reflect101", 0);
+
+  putGray(el("src"), img.gray, img.w, img.h, true);
+  putGray(el("dst"), mine, img.w, img.h, true);
+
+  var d = new Float32Array(mine.length), maxd = 0;
+  for (var i = 0; i < mine.length; i++) {
+    d[i] = (mine[i] - ref[i]) * 6;
+    if (Math.abs(mine[i] - ref[i]) > maxd) maxd = Math.abs(mine[i] - ref[i]);
+  }
+  putGray(el("diff"), d, img.w, img.h, false);
+
+  el("kcap").textContent = S.k + " x " + S.k;
+  buildTable();
+  drawPad();
+  el("modenote").innerHTML = MODE_NOTE[S.mode];
+  el("cvalfield").hidden = S.mode !== "constant";
+
+  el("verdict").innerHTML = S.mode === "reflect101"
+    ? "This is the reference, so the difference panel is flat gray. Change the mode to see where the choice actually shows up."
+    : "The largest difference from the default is <b>" + fmt(maxd, 1) +
+      " gray levels</b>, and every bit of it is within " + (S.k >> 1) +
+      " pixels of an edge. <b>The border mode never touches the middle of the image.</b>";
+
+  codePanel("code", codeText());
+}
+
+/* separable() in the shared library assumes no constant value; this variant
+   carries borderValue through so BORDER_CONSTANT is honest. */
+function separableConst(src, w, h, k1, mode, cval) {
+  var side = k1.length, r = side >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s, idx;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) {
+        idx = clampIndex(x + d, w, mode);
+        s += (idx < 0 ? cval : src[y * w + idx]) * k1[d + r];
+      }
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) {
+        idx = clampIndex(y + d, h, mode);
+        s += (idx < 0 ? cval : tmp[idx * w + x]) * k1[d + r];
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+function codeText() {
+  var name = "cv.BORDER_" + S.mode.toUpperCase().replace("REFLECT101", "REFLECT_101");
+  var r = S.k >> 1;
+  var lines = ["kernel = np.ones((" + S.k + ", " + S.k + "), np.float32) / " + (S.k * S.k)];
+
+  if (S.mode === "wrap") {
+    /* filter2D asserts columnBorderType != BORDER_WRAP, so this is the only
+       route that actually runs. Worth showing rather than printing a call
+       that raises. */
+    lines.push("");
+    lines.push("# filter2D refuses BORDER_WRAP outright:");
+    lines.push("#   error: (-215:Assertion failed) columnBorderType != BORDER_WRAP");
+    lines.push("# so pad by hand, filter, then cut the padding back off.");
+    lines.push("p = cv.copyMakeBorder(img, " + r + ", " + r + ", " + r + ", " + r +
+               ", cv.BORDER_WRAP)");
+    lines.push("out = cv.filter2D(p, -1, kernel)[" + r + ":-" + r + ", " + r + ":-" + r + "]");
+  } else if (S.mode === "constant") {
+    lines.push("out = cv.filter2D(img, -1, kernel, borderType=cv.BORDER_CONSTANT)");
+    lines.push("# that always pads with 0. filter2D takes no borderValue, so to");
+    lines.push("# choose the value you pad first:");
+    lines.push("p = cv.copyMakeBorder(img, " + r + ", " + r + ", " + r + ", " + r + ",");
+    lines.push("                      cv.BORDER_CONSTANT, value=" + S.cval + ")");
+    lines.push("out = cv.filter2D(p, -1, kernel)[" + r + ":-" + r + ", " + r + ":-" + r + "]");
+  } else {
+    lines.push("out = cv.filter2D(img, -1, kernel, borderType=" + name + ")");
+    if (S.mode === "reflect101") {
+      lines.push("# BORDER_REFLECT_101 is also spelled cv.BORDER_DEFAULT");
+    }
+  }
+  return lines.join("\n");
+}
+
+/* ---------- wiring ---------- */
+
+el("mode").addEventListener("change", function () { S.mode = this.value; render(); });
+el("ksize").addEventListener("click", function (e) {
+  var b = e.target.closest("button"); if (!b) return;
+  [].forEach.call(this.children, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+  S.k = +b.getAttribute("data-v");
+  el("pos").max = String(PATCH_W - 1);
+  render();
+});
+bindSlider("pos", null, function (v) { S.pos = v; drawPad(); });
+bindSlider("cval", "cvalv", function (v) { S.cval = v; render(); });
+wireCopy(el("copy"), codeText);
+onThemeChange(function () { if (img) render(); });
+
+loadImages(["church"], function (out) {
+  img = out.church;
+  /* take a real 10 x 6 patch from the top-left of the photo */
+  patch = new Float32Array(PATCH_W * PATCH_H);
+  for (var y = 0; y < PATCH_H; y++)
+    for (var x = 0; x < PATCH_W; x++)
+      patch[y * PATCH_W + x] = Math.round(img.gray[(y * 6) * img.w + x * 6]);
+  el("pos").max = String(PATCH_W - 1);
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none !important}
+.up{
+  display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  text-decoration:none;
+}
+.up:hover{color:var(--accent)}
+</style>
+<title>Shadow on the Page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDF1F6;
+  --ink:#16233A;
+  --ink-2:#4A5A72;
+  --ink-3:#7A889C;
+  --rule:#D3DBE6;
+  --rule-2:#BCC7D6;
+  --accent:#2F6FB5;
+  --accent-ink:#1F3763;
+  --accent-soft:#DCE6F1;
+  --warm:#C2542F;
+  --warm-soft:#F6E3DC;
+  --signal:#C8801A;
+  --signal-soft:#FBEBD2;
+  --shadow:0 1px 2px rgba(22,35,58,.06), 0 8px 24px -12px rgba(22,35,58,.22);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101823;
+    --surface:#17202D;
+    --surface-2:#1E2937;
+    --ink:#E6EDF6;
+    --ink-2:#A9B7C9;
+    --ink-3:#7A889C;
+    --rule:#2A3646;
+    --rule-2:#3A4859;
+    --accent:#6FA8E0;
+    --accent-ink:#A9CCEE;
+    --accent-soft:#1D3149;
+    --warm:#E08C63;
+    --warm-soft:#3A2620;
+    --signal:#E0A83F;
+    --signal-soft:#3B2E14;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101823;
+  --surface:#17202D;
+  --surface-2:#1E2937;
+  --ink:#E6EDF6;
+  --ink-2:#A9B7C9;
+  --ink-3:#7A889C;
+  --rule:#2A3646;
+  --rule-2:#3A4859;
+  --accent:#6FA8E0;
+  --accent-ink:#A9CCEE;
+  --accent-soft:#1D3149;
+  --warm:#E08C63;
+  --warm-soft:#3A2620;
+  --signal:#E0A83F;
+  --signal-soft:#3B2E14;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace}
+
+/* ---------- header ---------- */
+.pagehead{
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+  padding:22px 28px 20px;
+}
+.pagehead .wrap{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 32px}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+  display:block;margin-bottom:6px;
+}
+.pagehead h1{
+  font-size:31px;line-height:1.1;font-weight:600;margin:0;
+  letter-spacing:-.018em;text-wrap:balance;
+}
+.pagehead p{margin:0;color:var(--ink-2);max-width:56ch;font-size:14.5px;flex:1 1 340px}
+
+/* ---------- shell ---------- */
+main{
+  max-width:1400px;margin:0 auto;padding:22px 28px 40px;
+  display:grid;grid-template-columns:302px minmax(0,1fr);gap:22px;align-items:start;
+}
+@media (max-width:1020px){ main{grid-template-columns:minmax(0,1fr)} }
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+}
+.panel > h2{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-3);
+  margin:0;padding:12px 16px 10px;border-bottom:1px solid var(--rule);
+}
+.panel .body{padding:16px}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+@media (max-width:1020px){ .rail{position:static} }
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > label, .flabel{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;
+}
+
+.seg{display:flex;border:1px solid var(--rule-2);border-radius:5px;overflow:hidden}
+.seg button{
+  flex:1;appearance:none;border:0;background:var(--surface);
+  color:var(--ink-2);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;
+  border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+
+select, input[type="number"]{
+  font:inherit;font-family:"IBM Plex Mono", monospace;font-size:13px;
+  color:var(--ink);background:var(--surface);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 8px;width:100%;
+}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+/* ---------- kernel matrix ---------- */
+.kwrap{display:flex;justify-content:center;padding:2px 0 4px}
+.kgrid{display:grid;gap:5px}
+.kcell{
+  width:52px;height:42px;
+  border:1px solid var(--rule-2);border-radius:4px;
+  background:var(--surface-2);
+  font-family:"IBM Plex Mono", monospace;font-size:14px;font-weight:500;
+  color:var(--ink);text-align:center;
+  padding:0;
+  font-variant-numeric:tabular-nums;
+}
+.kgrid.k5 .kcell{width:38px;height:34px;font-size:12.5px}
+.kcell:focus{outline:2px solid var(--accent);outline-offset:1px}
+.kcell.pos{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.kcell.neg{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.kcell.zero{color:var(--ink-3)}
+.kcell.center{box-shadow:inset 0 0 0 2px var(--signal)}
+
+.presets{display:flex;flex-wrap:wrap;gap:5px}
+.presets button{
+  appearance:none;font:inherit;font-size:12.5px;
+  background:var(--surface-2);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:20px;padding:4px 11px;cursor:pointer;
+}
+.presets button:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+.presets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+.divline{
+  display:flex;align-items:baseline;justify-content:center;gap:8px;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;color:var(--ink-2);
+  padding-top:2px;
+}
+.divline strong{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.divline input{width:66px;text-align:center}
+
+.note{font-size:12.5px;line-height:1.45;color:var(--ink-3);margin:8px 0 0}
+.note b{color:var(--ink-2);font-weight:600}
+
+/* ---------- stage ---------- */
+.stage{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule)}
+.tabs button{
+  appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  font:inherit;font-size:14.5px;font-weight:500;color:var(--ink-3);
+  padding:8px 16px;cursor:pointer;margin-bottom:-1px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tabs .anchor{
+  margin-left:auto;align-self:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;color:var(--ink-3);
+  letter-spacing:.06em;padding-right:4px;
+}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btn{
+  appearance:none;font:inherit;font-size:13.5px;font-weight:500;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 14px;cursor:pointer;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:focus-visible, .presets button:focus-visible, .seg button:focus-visible, .tabs button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px
+}
+.spacer{flex:1 1 auto}
+.slider{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.slider input{width:110px}
+
+/* ---------- stepper grids ---------- */
+.gridrow{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.gridbox{display:flex;flex-direction:column;gap:7px}
+.gridcap{
+  font-family:"IBM Plex Mono", monospace;font-size:12px;color:var(--ink-2);
+  display:flex;align-items:baseline;gap:8px;
+}
+.gridcap em{font-style:normal;color:var(--ink-3);font-size:11px}
+.pgrid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);width:max-content}
+.pc{
+  width:31px;height:25px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;
+  font-variant-numeric:tabular-nums;
+  background:var(--surface);color:var(--ink-2);position:relative;
+}
+.pc.pad{opacity:.48;font-style:italic}
+.pc.mid{background:#9AA6B5;color:#FFFFFF}
+.pc.on{background:#3E4C5E;color:#fff;font-weight:500}
+:root[data-theme="dark"] .pc.on{background:#5C6E85}
+:root[data-theme="dark"] .pc.mid{background:#7F8D9E}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .pc.on{background:#5C6E85}
+  :root:not([data-theme="light"]) .pc.mid{background:#7F8D9E}
+}
+.pc.win{box-shadow:inset 0 0 0 2px var(--signal);z-index:2}
+.pc.cur{box-shadow:inset 0 0 0 2px var(--accent);z-index:3}
+.pc.done{color:var(--ink)}
+.pc.empty{background:var(--surface-2);color:transparent}
+.gwrap{overflow-x:auto;padding-bottom:2px}
+
+/* ---------- neighborhood readout ---------- */
+.readout{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;
+}
+.mini{display:flex;flex-direction:column;gap:5px;align-items:center}
+.mini .mlab{
+  font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mgrid{display:grid;gap:2px}
+.mcell{
+  min-width:30px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--surface);border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+  padding:0 3px;
+}
+.mgrid.k5 .mcell{min-width:25px;height:19px;font-size:9.5px}
+.mcell.pos{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent-soft)}
+.mcell.neg{color:var(--warm);background:var(--warm-soft);border-color:var(--warm-soft)}
+.mcell.padded{font-style:italic;color:var(--ink-3);background:var(--surface-2)}
+.op{font-family:"IBM Plex Mono", monospace;font-size:17px;color:var(--ink-3);align-self:center;padding-top:12px}
+.sumout{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.sumout .slab{font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sumout .sval{font-family:"IBM Plex Mono", monospace;font-size:22px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.sumout .sexp{font-family:"IBM Plex Mono", monospace;font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- playground ---------- */
+.imgrow{display:flex;flex-wrap:wrap;gap:20px}
+.imgbox{display:flex;flex-direction:column;gap:7px}
+.imgbox canvas{
+  display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface-2);
+  image-rendering:pixelated;max-width:100%;height:auto;cursor:crosshair;
+}
+.optrow{display:flex;flex-wrap:wrap;gap:14px}
+.optrow .field{margin-bottom:0;min-width:150px}
+
+/* ---------- code bar ---------- */
+.codebar{
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.codebar header{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.codebar header span{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.codebar pre{
+  margin:0;padding:14px 16px;overflow-x:auto;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;line-height:1.6;
+  color:var(--ink);
+}
+.codebar .kw{color:var(--accent)}
+.codebar .cm{color:var(--ink-3);font-style:italic}
+.codebar .num{color:var(--warm)}
+
+/* ---------- footer ---------- */
+.pagefoot{border-top:1px solid var(--rule);background:var(--surface);margin-top:8px}
+.pagefoot .wrap{max-width:1400px;margin:0 auto;padding:22px 28px 30px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px 32px}
+.pagefoot h3{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 7px;font-weight:600;
+}
+.pagefoot p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.pagefoot code{font-family:"IBM Plex Mono", monospace;font-size:12.5px;color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px}
+.trio canvas{display:block;width:100%;height:auto;border:1px solid var(--rule);
+  border-radius:4px;background:var(--surface-2)}
+.verdict{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;
+  padding:3px 9px;border-radius:20px;display:inline-block;font-weight:600;
+}
+.verdict.ok{background:var(--accent-soft);color:var(--accent-ink)}
+.verdict.bad{background:var(--warm-soft);color:var(--warm)}
+.readable{
+  display:flex;align-items:baseline;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:12px;color:var(--ink-3);
+}
+.readable b{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;flex:1;min-width:60px}
+.bar span{display:block;height:100%;background:var(--accent)}
+.bar.bad span{background:var(--warm)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink-3)}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;
+  vertical-align:3px}
+</style>
+</head>
+<body>
+<header class="pagehead">
+  <div class="wrap">
+    <div>
+      <a class="up" href="index.html">&#8592; Lecture 04 demos</a>
+      <span class="eyebrow">CS 4337 / Lecture 04 / Thresholding</span>
+      <h1>Shadow on the Page</h1>
+    </div>
+    <p>The demo that justifies adaptive thresholding. Crank the shadow across a page of text and watch one global cut fail everywhere at once, no matter where you put it.</p>
+  </div>
+</header>
+
+<main>
+  <div class="rail">
+
+    <section class="panel">
+      <h2>The lighting</h2>
+      <div class="body">
+        <div class="field">
+          <label for="shadow">Shadow strength = <b id="shadowv" class="mono">0</b>%</label>
+          <input type="range" id="shadow" min="0" max="100" value="0">
+        </div>
+        <div class="field">
+          <label>Shadow shape</label>
+          <div class="seg" id="shape">
+            <button data-v="diag" aria-pressed="true">Diagonal</button>
+            <button data-v="corner" aria-pressed="false">Corner</button>
+            <button data-v="hand" aria-pressed="false">Hand</button>
+          </div>
+        </div>
+        <p class="note">A phone camera over a book. The ink is the same darkness everywhere;
+          only the light falling on the paper changes.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Global cut</h2>
+      <div class="body">
+        <div class="field">
+          <label for="gt">T = <b id="gtv" class="mono">128</b></label>
+          <input type="range" id="gt" min="0" max="255" value="128">
+        </div>
+        <button class="btn" id="useotsu" style="width:100%">Let Otsu choose T</button>
+        <p class="note" id="otsunote" style="margin-top:10px"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Adaptive cut</h2>
+      <div class="body">
+        <div class="field">
+          <label for="bs">blockSize = <b id="bsv" class="mono">21</b></label>
+          <input type="range" id="bs" min="3" max="61" step="2" value="21">
+        </div>
+        <div class="field">
+          <label for="cc">C = <b id="ccv" class="mono">7</b></label>
+          <input type="range" id="cc" min="-10" max="25" value="7">
+        </div>
+        <div class="field">
+          <label>Method</label>
+          <div class="seg" id="method">
+            <button data-v="mean" aria-pressed="true">MEAN_C</button>
+            <button data-v="gauss" aria-pressed="false">GAUSSIAN_C</button>
+          </div>
+        </div>
+        <p class="note">Each pixel gets its own T: the average of the block around it, minus C.
+          <b>C is what stops flat paper from turning into noise.</b></p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="stage">
+
+    <div class="trio">
+      <div class="plotbox">
+        <div class="gridcap">what the camera sees</div>
+        <canvas id="src"></canvas>
+        <div class="readable"><span>darkest paper</span><b id="minpaper">-</b></div>
+      </div>
+      <div class="plotbox">
+        <div class="gridcap">global <em id="gcap">T = 128</em></div>
+        <canvas id="gout"></canvas>
+        <div class="readable">
+          <span>legible</span><b id="gscore">-</b>
+          <span class="bar" id="gbar"><span style="width:0"></span></span>
+        </div>
+        <div><span class="verdict ok" id="gverdict">readable</span></div>
+      </div>
+      <div class="plotbox">
+        <div class="gridcap">adaptive <em id="acap">blockSize 21, C 7</em></div>
+        <canvas id="aout"></canvas>
+        <div class="readable">
+          <span>legible</span><b id="ascore">-</b>
+          <span class="bar" id="abar"><span style="width:0"></span></span>
+        </div>
+        <div><span class="verdict ok" id="averdict">readable</span></div>
+      </div>
+    </div>
+
+    <div class="plotbox">
+      <div class="gridcap">a single row of pixels, straight through the text
+        <em>the horizontal line on the image above</em></div>
+      <canvas id="profile"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--ink-2)"></i>pixel value along the row</span>
+        <span><i style="background:var(--warm)"></i>the one global T</span>
+        <span><i style="background:var(--accent)"></i>the adaptive T, which follows the paper</span>
+      </div>
+      <p class="note">This is the whole argument. The ink dips are the same depth everywhere,
+        but they sit on a sloping floor. <b>A horizontal line cannot stay between the ink and
+        the paper for the whole row. A line that bends can.</b></p>
+    </div>
+
+    <div class="codebar">
+      <header><span>the same thing, in the notebook</span>
+        <button class="btn" id="copy" style="padding:3px 10px;font-size:12px;margin-left:auto">Copy</button>
+      </header>
+      <pre id="code"></pre>
+    </div>
+
+  </div>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div><h3>Try this first</h3><p>Leave the shadow at 0 and ask the class which method they
+      would ship. Both work. Then push the shadow to 60 and ask again, before revealing the
+      middle panel.</p></div>
+    <div><h3>The trap in blockSize</h3><p>Drag it down to 5. The paper itself starts thresholding
+      into noise, because a tiny block sees only paper and has no contrast to work with.
+      Drag it to 61 and adaptive slowly turns back into a global threshold.</p></div>
+    <div><h3>The trap in C</h3><p>Set C to 0 on a clean page. Half the blank paper turns black.
+      C is the margin that says <i>only call it ink if it is meaningfully darker than its
+      neighbours.</i></p></div>
+    <div><h3>Where this ships</h3><p>Every phone document scanner runs something like this.
+      It is why a photo of a page in bad light still comes out as clean black text, and it
+      is deck slide 22.</p></div>
+  </div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   Shared helpers for the CS 4337 Lecture 04 interactive pages.
+   Plain ES5 so the files run from file:// in any browser in the room.
+   ------------------------------------------------------------------ */
+
+function el(id) { return document.getElementById(id); }
+
+function mk(tag, cls, txt) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined && txt !== null) n.textContent = txt;
+  return n;
+}
+
+/* ---------- images ---------- */
+
+/* Decodes the inlined base64 assets, then hands back {w,h,rgb,gray} per key.
+   gray is a Float32Array so filter output can go negative before clipping. */
+function loadImages(keys, done) {
+  var out = {}, pending = keys.length;
+  if (!pending) return done(out);
+  keys.forEach(function (k) {
+    var im = new Image();
+    im.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = im.width; c.height = im.height;
+      var g = c.getContext("2d");
+      g.drawImage(im, 0, 0);
+      var d = g.getImageData(0, 0, c.width, c.height).data;
+      var n = c.width * c.height;
+      var gray = new Float32Array(n), rgb = new Uint8ClampedArray(d);
+      for (var i = 0; i < n; i++) {
+        gray[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      }
+      out[k] = { w: c.width, h: c.height, gray: gray, rgb: rgb };
+      if (--pending === 0) done(out);
+    };
+    im.src = IMAGES[k];
+  });
+}
+
+/* Paints a single-channel array. clip=true rounds into 0..255 the way uint8
+   storage would; clip=false shifts by +128 so negatives stay visible. */
+function putGray(cv, arr, w, h, clip) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = clip === false ? arr[i] + 128 : arr[i];
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+function putRGB(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h);
+  im.data.set(arr);
+  g.putImageData(im, 0, 0);
+}
+
+/* Paints a 0/1 mask: 1 -> white, 0 -> black, matching a binary cv image. */
+function putMask(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = arr[i] ? 255 : 0;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+/* ---------- borders ---------- */
+
+/* One index, folded back into 0..n-1 by the chosen border rule.
+   Returns -1 for BORDER_CONSTANT, meaning "there is no pixel, use the value". */
+function clampIndex(i, n, mode) {
+  if (i >= 0 && i < n) return i;
+  if (n === 1) return 0;
+  switch (mode) {
+    case "constant":  return -1;
+    case "replicate": return i < 0 ? 0 : n - 1;
+    case "wrap":      return ((i % n) + n) % n;
+    case "reflect":
+      while (i < 0 || i >= n) { if (i < 0) i = -i - 1; if (i >= n) i = 2 * n - i - 1; }
+      return i;
+    default: /* reflect101, filter2D's own default */
+      while (i < 0 || i >= n) { if (i < 0) i = -i; if (i >= n) i = 2 * n - i - 2; }
+      return i;
+  }
+}
+
+/* ---------- filtering ---------- */
+
+/* Correlation, which is what cv.filter2D actually computes. Set flip to get
+   true convolution. k is a flat array of side*side weights. */
+function correlate(src, w, h, k, side, mode, flip, constVal) {
+  var r = side >> 1, out = new Float32Array(w * h), cv0 = constVal || 0;
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var s = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) {
+          var sx = clampIndex(x + dx, w, mode);
+          var val = (sy < 0 || sx < 0) ? cv0 : src[sy * w + sx];
+          var u = flip ? -dy : dy, v = flip ? -dx : dx;
+          s += val * k[(u + r) * side + (v + r)];
+        }
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* A separable pass costs 2k multiplies per pixel instead of k*k. */
+function separable(src, w, h, k1, mode) {
+  var side = k1.length, r = side >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += src[y * w + clampIndex(x + d, w, mode)] * k1[d + r];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * k1[d + r];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+function medianFilter(src, w, h, side, mode) {
+  var r = side >> 1, out = new Float32Array(w * h), buf = new Float32Array(side * side);
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var n = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) buf[n++] = src[sy * w + clampIndex(x + dx, w, mode)];
+      }
+      var a = Array.prototype.slice.call(buf, 0, n).sort(function (p, q) { return p - q; });
+      out[y * w + x] = a[n >> 1];
+    }
+  }
+  return out;
+}
+
+/* cv.getGaussianKernel: a 1D kernel, normalised to sum 1. */
+function gaussian1D(side, sigma) {
+  var r = side >> 1, k = new Float32Array(side), sum = 0;
+  if (!sigma) sigma = 0.3 * ((side - 1) * 0.5 - 1) + 0.8;   // OpenCV's default
+  for (var i = 0; i < side; i++) {
+    k[i] = Math.exp(-((i - r) * (i - r)) / (2 * sigma * sigma));
+    sum += k[i];
+  }
+  for (i = 0; i < side; i++) k[i] /= sum;
+  return k;
+}
+
+/* ---------- histogram ---------- */
+
+function histogram(gray) {
+  var h = new Float64Array(256);
+  for (var i = 0; i < gray.length; i++) {
+    var v = Math.round(gray[i]);
+    h[v < 0 ? 0 : v > 255 ? 255 : v]++;
+  }
+  return h;
+}
+
+/* Within-class variance for every T, which is what Otsu minimises.
+   Returns {v, t, w0, m0, m1} with v[t] = w0*s0^2 + w1*s1^2. */
+function otsuCurve(hist) {
+  var total = 0, sumAll = 0, i;
+  for (i = 0; i < 256; i++) { total += hist[i]; sumAll += i * hist[i]; }
+  var v = new Float64Array(256), w0 = new Float64Array(256),
+      m0 = new Float64Array(256), m1 = new Float64Array(256);
+  var c0 = 0, s0 = 0, best = -1, bestV = Infinity;
+  var varAll = 0;
+  for (i = 0; i < 256; i++) varAll += hist[i] * Math.pow(i - sumAll / total, 2);
+  varAll /= total;
+  for (var t = 0; t < 256; t++) {
+    c0 += hist[t]; s0 += t * hist[t];
+    var c1 = total - c0, mu0 = c0 ? s0 / c0 : 0, mu1 = c1 ? (sumAll - s0) / c1 : 0;
+    w0[t] = c0 / total; m0[t] = mu0; m1[t] = mu1;
+    /* between-class variance is the cheap half; the rest is what is left. */
+    var between = (c0 / total) * (c1 / total) * (mu0 - mu1) * (mu0 - mu1);
+    v[t] = varAll - between;
+    if (c0 && c1 && v[t] < bestV) { bestV = v[t]; best = t; }
+  }
+  return { v: v, t: best, w0: w0, m0: m0, m1: m1, varAll: varAll };
+}
+
+/* ---------- theme-aware canvas drawing ---------- */
+
+var THEME = {};
+function readTheme() {
+  var cs = getComputedStyle(document.documentElement);
+  ["ink", "ink-2", "ink-3", "rule", "rule-2", "accent", "accent-ink", "accent-soft",
+   "warm", "warm-soft", "signal", "signal-soft", "surface", "surface-2", "paper"
+  ].forEach(function (k) { THEME[k] = cs.getPropertyValue("--" + k).trim(); });
+  return THEME;
+}
+
+function onThemeChange(cb) {
+  readTheme();
+  if (window.matchMedia) {
+    var m = window.matchMedia("(prefers-color-scheme: dark)");
+    var h = function () { readTheme(); cb(); };
+    if (m.addEventListener) m.addEventListener("change", h);
+    else if (m.addListener) m.addListener(h);
+  }
+}
+
+/* Canvases are sized in CSS pixels but drawn at device resolution, so the
+   axis text on a projector stays sharp. */
+function fitCanvas(cv, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  cv.style.width = w + "px"; cv.style.height = h + "px";
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  var g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  return g;
+}
+
+/* ---------- code panel ---------- */
+
+var PY_KW = /\b(import|as|for|in|if|else|elif|return|def|not|and|or|True|False|None|while)\b/g;
+
+function hl(code) {
+  var s = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  s = s.replace(/(#[^\n]*)/g, '<span class="cm">$1</span>');
+  s = s.replace(/('[^']*')/g, '<span class="num">$1</span>');
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  s = s.replace(PY_KW, '<span class="kw">$1</span>');
+  s = s.replace(/\b(cv|np|plt)\./g, '<span class="kw">$1</span>.');
+  return s;
+}
+
+/* Every page prints the OpenCV call its controls stand for. */
+function codePanel(id, code) { el(id).innerHTML = hl(code); }
+
+function wireCopy(btn, getText) {
+  btn.addEventListener("click", function () {
+    var t = getText();
+    var ok = function () {
+      var old = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(ok, function () {});
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+}
+
+/* ---------- small utilities ---------- */
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+function fmt(v, n) {
+  if (!isFinite(v)) return "-";
+  var p = Math.pow(10, n === undefined ? 1 : n);
+  return String(Math.round(v * p) / p);
+}
+
+/* A labelled slider that keeps its readout in sync. */
+function bindSlider(inputId, outId, fn, format) {
+  var inp = el(inputId), out = el(outId);
+  var run = function () {
+    if (out) out.textContent = format ? format(+inp.value) : inp.value;
+    fn(+inp.value);
+  };
+  inp.addEventListener("input", run);
+  return run;
+}
+
+
+var W = 300, H = 220, ROW = 118;
+var S = { shadow: 0, shape: "diag", gt: 128, bs: 21, c: 7, method: "mean" };
+var base = null;      /* the page under perfectly even light */
+var lit  = null;      /* the same page with the shadow applied */
+
+/* ---------- draw a page of text once, then read it back as pixels ---------- */
+
+function buildBase() {
+  var c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  var g = c.getContext("2d");
+  g.fillStyle = "#fff"; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#1a1a1a";
+
+  g.font = 'bold 13px Georgia, "Times New Roman", serif';
+  g.fillText("Thresholding", 22, 30);
+
+  g.font = '9px Georgia, "Times New Roman", serif';
+  var body = [
+    "A threshold turns a grayscale image into a binary one by",
+    "comparing every pixel against a single number. The whole",
+    "method rests on an assumption that is easy to miss: that one",
+    "number can separate the thing you want from everything else,",
+    "everywhere in the picture at once.",
+    "",
+    "That assumption holds when the lighting is even. It fails the",
+    "moment a shadow falls across the scene, because the paper in",
+    "the shadow can be darker than the ink in the light. No single",
+    "cut survives that, and no amount of searching for a better cut",
+    "will help, because the problem is not which number you chose.",
+    "",
+    "Adaptive thresholding gives every pixel its own threshold,",
+    "computed from the neighbourhood around it. The cut stops",
+    "being a horizontal line and becomes a surface that follows",
+    "the illumination. This is what a phone scanner does."
+  ];
+  for (var i = 0; i < body.length; i++) g.fillText(body[i], 22, 48 + i * 11);
+
+  var d = g.getImageData(0, 0, W, H).data;
+  var out = new Float32Array(W * H);
+  for (i = 0; i < W * H; i++) out[i] = d[i * 4];
+  return out;
+}
+
+/* Multiplicative shading, which is how real illumination works. */
+function shade(x, y, shape) {
+  var nx = x / W, ny = y / H;
+  switch (shape) {
+    case "corner": {
+      var dx = nx - 1, dy = ny - 0;
+      return clamp(1 - Math.sqrt(dx * dx + dy * dy) * 0.95, 0, 1);
+    }
+    case "hand": {
+      /* a soft band, like a hand or a page curl across the middle */
+      var t = (nx * 0.75 + ny * 0.25) - 0.5;
+      return clamp(1 - Math.exp(-(t * t) / 0.012), 0, 1);
+    }
+    default:
+      return clamp(1 - (nx * 0.6 + ny * 0.4), 0, 1);
+  }
+}
+
+/* Fixed sensor grain. Real paper is never perfectly flat, and without it a
+   small blockSize looks harmless here when in practice it is the classic
+   way to turn blank paper into confetti. Fixed, not random per frame, so
+   dragging a slider does not make the picture shimmer. */
+var GRAIN = null;
+function buildGrain() {
+  var g = new Float32Array(W * H), seed = 20240401;
+  for (var i = 0; i < g.length; i++) {
+    /* a small deterministic PRNG: the demo must look the same every class */
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    var u1 = ((seed >>> 8) % 10000 + 1) / 10001;
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    var u2 = ((seed >>> 8) % 10000) / 10000;
+    g[i] = Math.sqrt(-2 * Math.log(u1)) * Math.cos(6.283185 * u2) * 3.2;
+  }
+  return g;
+}
+
+function applyLight() {
+  lit = new Float32Array(W * H);
+  var amt = S.shadow / 100;
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      var i = y * W + x;
+      var f = 1 - amt * (1 - shade(x, y, S.shape));
+      lit[i] = clamp(base[i] * f + GRAIN[i], 0, 255);
+    }
+  }
+}
+
+/* ---------- the two thresholds ---------- */
+
+function globalTh(src, t) {
+  var o = new Uint8Array(src.length);
+  /* THRESH_BINARY_INV: ink is dark, so ink becomes the white foreground */
+  for (var i = 0; i < src.length; i++) o[i] = src[i] > t ? 0 : 1;
+  return o;
+}
+
+function adaptiveTh(src, bs, C, method) {
+  var o = new Uint8Array(src.length), local;
+  if (method === "gauss") {
+    local = separable(src, W, H, gaussian1D(bs, 0), "replicate");
+  } else {
+    var k = new Float32Array(bs);
+    for (var i = 0; i < bs; i++) k[i] = 1 / bs;
+    local = separable(src, W, H, k, "replicate");
+  }
+  for (i = 0; i < src.length; i++) o[i] = src[i] > local[i] - C ? 0 : 1;
+  return { mask: o, local: local };
+}
+
+/* How much of the real ink survived, penalised for paper wrongly called ink.
+   Not a formal metric, just an honest legibility score for the room.
+   The antialiased rim around each glyph is neither ink nor paper, so it is
+   left out of both counts: including it would charge adaptive for edge pixels
+   that are genuinely darker than their neighbours. */
+function score(mask) {
+  var hit = 0, ink = 0, falsePos = 0, paper = 0;
+  for (var i = 0; i < base.length; i++) {
+    if (base[i] < 128) { ink++; if (mask[i]) hit++; }
+    else if (base[i] > 245) { paper++; if (mask[i]) falsePos++; }
+  }
+  var recall = ink ? hit / ink : 0;
+  var noise = paper ? falsePos / paper : 0;
+  return clamp(recall - noise * 3, 0, 1);
+}
+
+function verdict(elm, bar, v) {
+  var pct = Math.round(v * 100);
+  bar.firstChild.style.width = pct + "%";
+  if (v > 0.75) { elm.className = "verdict ok"; elm.textContent = "readable"; bar.className = "bar"; }
+  else if (v > 0.45) { elm.className = "verdict bad"; elm.textContent = "patchy"; bar.className = "bar bad"; }
+  else { elm.className = "verdict bad"; elm.textContent = "unusable"; bar.className = "bar bad"; }
+  return pct;
+}
+
+/* ---------- the row profile, which carries the whole argument ---------- */
+
+function drawProfile(adaptiveLocal) {
+  var PW = 840, PH = 170, g = fitCanvas(el("profile"), PW, PH);
+  var L = 40, R = 10, T = 12, B = 22;
+  var iw = PW - L - R, ih = PH - T - B;
+
+  g.strokeStyle = THEME.rule; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(L, T); g.lineTo(L, T + ih); g.lineTo(L + iw, T + ih); g.stroke();
+
+  var x, v, px;
+  g.strokeStyle = THEME["ink-2"]; g.lineWidth = 1.4;
+  g.beginPath();
+  for (x = 0; x < W; x++) {
+    v = lit[ROW * W + x]; px = L + (x / (W - 1)) * iw;
+    var py = T + ih - (v / 255) * ih;
+    if (x === 0) g.moveTo(px, py); else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  g.strokeStyle = THEME.warm; g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(L, T + ih - (S.gt / 255) * ih);
+  g.lineTo(L + iw, T + ih - (S.gt / 255) * ih);
+  g.stroke();
+
+  g.strokeStyle = THEME.accent; g.lineWidth = 2;
+  g.beginPath();
+  for (x = 0; x < W; x++) {
+    v = clamp(adaptiveLocal[ROW * W + x] - S.c, 0, 255);
+    px = L + (x / (W - 1)) * iw;
+    var py2 = T + ih - (v / 255) * ih;
+    if (x === 0) g.moveTo(px, py2); else g.lineTo(px, py2);
+  }
+  g.stroke();
+
+  g.fillStyle = THEME["ink-3"];
+  g.font = '10px "IBM Plex Mono", monospace';
+  g.textAlign = "left";
+  g.fillText("255", 4, T + 8);
+  g.fillText("0", 4, T + ih);
+  g.textAlign = "center";
+  g.fillText("left edge of the page", L + iw * 0.14, PH - 6);
+  g.fillText("right edge", L + iw * 0.9, PH - 6);
+}
+
+/* ---------- code ---------- */
+
+function codeText() {
+  var m = S.method === "gauss" ? "ADAPTIVE_THRESH_GAUSSIAN_C" : "ADAPTIVE_THRESH_MEAN_C";
+  return [
+    "gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)",
+    "",
+    "# one number for the whole image",
+    "ret, g = cv.threshold(gray, " + S.gt + ", 255, cv.THRESH_BINARY_INV)",
+    "",
+    "# one number per pixel, from the block around it",
+    "a = cv.adaptiveThreshold(gray, 255, cv." + m + ",",
+    "                         cv.THRESH_BINARY_INV, " + S.bs + ", " + S.c + ")",
+    "# blockSize must be odd. C is subtracted from the local mean."
+  ].join("\n");
+}
+
+/* ---------- render ---------- */
+
+function render() {
+  applyLight();
+
+  var gm = globalTh(lit, S.gt);
+  var ad = adaptiveTh(lit, S.bs, S.c, S.method);
+
+  putGray(el("src"), lit, W, H, true);
+  /* mark the row the profile is taken from */
+  var sg = el("src").getContext("2d");
+  sg.fillStyle = "rgba(200,128,26,.85)";
+  sg.fillRect(0, ROW, W, 1);
+
+  putMask(el("gout"), gm, W, H);
+  putMask(el("aout"), ad.mask, W, H);
+
+  el("gscore").textContent = verdict(el("gverdict"), el("gbar"), score(gm)) + "%";
+  el("ascore").textContent = verdict(el("averdict"), el("abar"), score(ad.mask)) + "%";
+
+  var mn = 255;
+  for (var x = 0; x < W; x++) { var v = lit[ROW * W + x]; if (v < mn) mn = v; }
+  var paperMin = 255, i;
+  for (i = 0; i < base.length; i++) if (base[i] > 200 && lit[i] < paperMin) paperMin = lit[i];
+  el("minpaper").textContent = Math.round(paperMin);
+
+  el("gcap").textContent = "T = " + S.gt;
+  el("acap").textContent = "blockSize " + S.bs + ", C " + S.c;
+
+  drawProfile(ad.local);
+  codePanel("code", codeText());
+}
+
+/* ---------- wiring ---------- */
+
+function seg(id, key) {
+  var box = el(id);
+  box.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    [].forEach.call(box.children, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    S[key] = b.getAttribute("data-v");
+    render();
+  });
+}
+seg("shape", "shape");
+seg("method", "method");
+
+bindSlider("shadow", "shadowv", function (v) { S.shadow = v; render(); });
+bindSlider("gt", "gtv", function (v) { S.gt = v; render(); });
+bindSlider("bs", "bsv", function (v) { S.bs = v; render(); });
+bindSlider("cc", "ccv", function (v) { S.c = v; render(); });
+
+el("useotsu").addEventListener("click", function () {
+  applyLight();
+  var o = otsuCurve(histogram(lit));
+  S.gt = o.t; el("gt").value = o.t; el("gtv").textContent = o.t;
+  el("otsunote").innerHTML = "Otsu chose <b>T = " + o.t + "</b> for this shadow. " +
+    (S.shadow > 35
+      ? "It is the best single cut available, and it is still not good enough. Searching harder for T is not the fix."
+      : "With even light, the best single cut is genuinely fine.");
+  render();
+});
+
+wireCopy(el("copy"), codeText);
+onThemeChange(function () { if (base) render(); });
+
+GRAIN = buildGrain();
+base = buildBase();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Pixel, Decided by Hand</title>
+<style>
+
+:root{
+  --paper:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDF1F6;
+  --ink:#16233A;
+  --ink-2:#4A5A72;
+  --ink-3:#7A889C;
+  --rule:#D3DBE6;
+  --rule-2:#BCC7D6;
+  --accent:#2F6FB5;
+  --accent-ink:#1F3763;
+  --accent-soft:#DCE6F1;
+  --warm:#C2542F;
+  --warm-soft:#F6E3DC;
+  --signal:#C8801A;
+  --signal-soft:#FBEBD2;
+  --shadow:0 1px 2px rgba(22,35,58,.06), 0 8px 24px -12px rgba(22,35,58,.22);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101823;
+    --surface:#17202D;
+    --surface-2:#1E2937;
+    --ink:#E6EDF6;
+    --ink-2:#A9B7C9;
+    --ink-3:#7A889C;
+    --rule:#2A3646;
+    --rule-2:#3A4859;
+    --accent:#6FA8E0;
+    --accent-ink:#A9CCEE;
+    --accent-soft:#1D3149;
+    --warm:#E08C63;
+    --warm-soft:#3A2620;
+    --signal:#E0A83F;
+    --signal-soft:#3B2E14;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101823;
+  --surface:#17202D;
+  --surface-2:#1E2937;
+  --ink:#E6EDF6;
+  --ink-2:#A9B7C9;
+  --ink-3:#7A889C;
+  --rule:#2A3646;
+  --rule-2:#3A4859;
+  --accent:#6FA8E0;
+  --accent-ink:#A9CCEE;
+  --accent-soft:#1D3149;
+  --warm:#E08C63;
+  --warm-soft:#3A2620;
+  --signal:#E0A83F;
+  --signal-soft:#3B2E14;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none !important}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace}
+
+/* ---------- header ---------- */
+.pagehead{
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+  padding:22px 28px 20px;
+}
+.pagehead .wrap{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 32px}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+  display:block;margin-bottom:6px;
+}
+.pagehead h1{
+  font-size:31px;line-height:1.1;font-weight:600;margin:0;
+  letter-spacing:-.018em;text-wrap:balance;
+}
+.pagehead p{margin:0;color:var(--ink-2);max-width:56ch;font-size:14.5px;flex:1 1 340px}
+
+/* ---------- shell ---------- */
+main{
+  max-width:1400px;margin:0 auto;padding:22px 28px 40px;
+  display:grid;grid-template-columns:302px minmax(0,1fr);gap:22px;align-items:start;
+}
+@media (max-width:1020px){ main{grid-template-columns:minmax(0,1fr)} }
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+}
+.panel > h2{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-3);
+  margin:0;padding:12px 16px 10px;border-bottom:1px solid var(--rule);
+}
+.panel .body{padding:16px}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+@media (max-width:1020px){ .rail{position:static} }
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > label, .flabel{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;
+}
+
+.seg{display:flex;border:1px solid var(--rule-2);border-radius:5px;overflow:hidden}
+.seg button{
+  flex:1;appearance:none;border:0;background:var(--surface);
+  color:var(--ink-2);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;
+  border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+
+select, input[type="number"]{
+  font:inherit;font-family:"IBM Plex Mono", monospace;font-size:13px;
+  color:var(--ink);background:var(--surface);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 8px;width:100%;
+}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+/* ---------- kernel matrix ---------- */
+.kwrap{display:flex;justify-content:center;padding:2px 0 4px}
+.kgrid{display:grid;gap:5px}
+.kcell{
+  width:52px;height:42px;
+  border:1px solid var(--rule-2);border-radius:4px;
+  background:var(--surface-2);
+  font-family:"IBM Plex Mono", monospace;font-size:14px;font-weight:500;
+  color:var(--ink);text-align:center;
+  padding:0;
+  font-variant-numeric:tabular-nums;
+}
+.kgrid.k5 .kcell{width:38px;height:34px;font-size:12.5px}
+.kcell:focus{outline:2px solid var(--accent);outline-offset:1px}
+.kcell.pos{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.kcell.neg{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.kcell.zero{color:var(--ink-3)}
+.kcell.center{box-shadow:inset 0 0 0 2px var(--signal)}
+
+.presets{display:flex;flex-wrap:wrap;gap:5px}
+.presets button{
+  appearance:none;font:inherit;font-size:12.5px;
+  background:var(--surface-2);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:20px;padding:4px 11px;cursor:pointer;
+}
+.presets button:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+.presets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+.divline{
+  display:flex;align-items:baseline;justify-content:center;gap:8px;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;color:var(--ink-2);
+  padding-top:2px;
+}
+.divline strong{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.divline input{width:66px;text-align:center}
+
+.note{font-size:12.5px;line-height:1.45;color:var(--ink-3);margin:8px 0 0}
+.note b{color:var(--ink-2);font-weight:600}
+
+/* ---------- stage ---------- */
+.stage{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule)}
+.tabs button{
+  appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  font:inherit;font-size:14.5px;font-weight:500;color:var(--ink-3);
+  padding:8px 16px;cursor:pointer;margin-bottom:-1px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tabs .anchor{
+  margin-left:auto;align-self:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;color:var(--ink-3);
+  letter-spacing:.06em;padding-right:4px;
+}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btn{
+  appearance:none;font:inherit;font-size:13.5px;font-weight:500;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 14px;cursor:pointer;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:focus-visible, .presets button:focus-visible, .seg button:focus-visible, .tabs button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px
+}
+.spacer{flex:1 1 auto}
+.slider{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.slider input{width:110px}
+
+/* ---------- stepper grids ---------- */
+.gridrow{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.gridbox{display:flex;flex-direction:column;gap:7px}
+.gridcap{
+  font-family:"IBM Plex Mono", monospace;font-size:12px;color:var(--ink-2);
+  display:flex;align-items:baseline;gap:8px;
+}
+.gridcap em{font-style:normal;color:var(--ink-3);font-size:11px}
+.pgrid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);width:max-content}
+.pc{
+  width:31px;height:25px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;
+  font-variant-numeric:tabular-nums;
+  background:var(--surface);color:var(--ink-2);position:relative;
+}
+.pc.pad{opacity:.48;font-style:italic}
+.pc.mid{background:#9AA6B5;color:#FFFFFF}
+.pc.on{background:#3E4C5E;color:#fff;font-weight:500}
+:root[data-theme="dark"] .pc.on{background:#5C6E85}
+:root[data-theme="dark"] .pc.mid{background:#7F8D9E}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .pc.on{background:#5C6E85}
+  :root:not([data-theme="light"]) .pc.mid{background:#7F8D9E}
+}
+.pc.win{box-shadow:inset 0 0 0 2px var(--signal);z-index:2}
+.pc.cur{box-shadow:inset 0 0 0 2px var(--accent);z-index:3}
+.pc.done{color:var(--ink)}
+.pc.empty{background:var(--surface-2);color:transparent}
+.gwrap{overflow-x:auto;padding-bottom:2px}
+
+/* ---------- neighborhood readout ---------- */
+.readout{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;
+}
+.mini{display:flex;flex-direction:column;gap:5px;align-items:center}
+.mini .mlab{
+  font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mgrid{display:grid;gap:2px}
+.mcell{
+  min-width:30px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--surface);border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+  padding:0 3px;
+}
+.mgrid.k5 .mcell{min-width:25px;height:19px;font-size:9.5px}
+.mcell.pos{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent-soft)}
+.mcell.neg{color:var(--warm);background:var(--warm-soft);border-color:var(--warm-soft)}
+.mcell.padded{font-style:italic;color:var(--ink-3);background:var(--surface-2)}
+.op{font-family:"IBM Plex Mono", monospace;font-size:17px;color:var(--ink-3);align-self:center;padding-top:12px}
+.sumout{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.sumout .slab{font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sumout .sval{font-family:"IBM Plex Mono", monospace;font-size:22px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.sumout .sexp{font-family:"IBM Plex Mono", monospace;font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- playground ---------- */
+.imgrow{display:flex;flex-wrap:wrap;gap:20px}
+.imgbox{display:flex;flex-direction:column;gap:7px}
+.imgbox canvas{
+  display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface-2);
+  image-rendering:pixelated;max-width:100%;height:auto;cursor:crosshair;
+}
+.optrow{display:flex;flex-wrap:wrap;gap:14px}
+.optrow .field{margin-bottom:0;min-width:150px}
+
+/* ---------- code bar ---------- */
+.codebar{
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.codebar header{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.codebar header span{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.codebar pre{
+  margin:0;padding:14px 16px;overflow-x:auto;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;line-height:1.6;
+  color:var(--ink);
+}
+.codebar .kw{color:var(--accent)}
+.codebar .cm{color:var(--ink-3);font-style:italic}
+.codebar .num{color:var(--warm)}
+
+/* ---------- footer ---------- */
+.pagefoot{border-top:1px solid var(--rule);background:var(--surface);margin-top:8px}
+.pagefoot .wrap{max-width:1400px;margin:0 auto;padding:22px 28px 30px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px 32px}
+.pagefoot h3{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 7px;font-weight:600;
+}
+.pagefoot p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.pagefoot code{font-family:"IBM Plex Mono", monospace;font-size:12.5px;color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+.up{
+  display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  text-decoration:none;
+}
+.up:hover{color:var(--accent)}
+.boards{display:flex;flex-wrap:wrap;gap:22px}
+.board{display:flex;flex-direction:column;gap:7px}
+.board .blab{font-family:"IBM Plex Mono", monospace;font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3)}
+.pc{width:38px;height:30px;font-size:12px}
+.pc.sel{box-shadow:inset 0 0 0 2px var(--accent);z-index:4;font-weight:700;color:var(--accent-ink)}
+.pc.nb{background:var(--signal-soft);color:var(--ink)}
+.pc.arm{background:var(--accent-soft);color:var(--accent-ink)}
+.pc.kill{color:var(--ink-3)}
+.pc.pick{cursor:pointer}
+.pc.pick:hover{background:var(--surface-2)}
+.probe{position:relative}
+.stagecv{
+  display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface);
+  width:100%;height:auto;max-width:420px;
+}
+.verdict{
+  display:inline-block;font-family:"IBM Plex Mono", monospace;font-weight:600;
+  font-size:13px;padding:4px 12px;border-radius:20px;
+}
+.verdict.keep{background:var(--accent-soft);color:var(--accent-ink)}
+.verdict.drop{background:var(--warm-soft);color:var(--warm)}
+.steps li{margin-bottom:9px;font-size:13.5px;color:var(--ink-2)}
+.steps li b{color:var(--ink)}
+.steps{margin:0;padding-left:20px}
+.wgrid{display:grid;grid-template-columns:auto auto auto auto;gap:5px 14px;align-items:baseline;
+  font-family:"IBM Plex Mono", monospace;font-size:12.5px}
+.wgrid .h{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.wgrid .v{color:var(--ink);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<header class="pagehead">
+  <div class="wrap">
+    <div>
+      <a class="up" href="index.html">&#8592; Lecture 05 demos</a>
+      <span class="eyebrow">CS 4337 / Lecture 05 / Appendix</span>
+      <h1>One Pixel, Decided by Hand</h1>
+    </div>
+    <p>The appendix walks one pixel through non-maxima suppression and then asserts the rest. Here every pixel is clickable, the two probe points are drawn where they actually land, and the four interpolation weights are the ones being used.</p>
+  </div>
+</header>
+
+<main>
+  <div class="rail">
+
+    <section class="panel">
+      <h2>The step</h2>
+      <div class="body">
+        <div class="field">
+          <label for="dist">distance = <b id="distv" class="mono">1.0</b> px</label>
+          <input type="range" id="dist" min="2" max="8" step="1" value="4">
+        </div>
+        <p class="note">How far to walk along the gradient before comparing. The notebook's
+          <span class="mono">nonmaxima_suppression(grad_norms, thetas, distance)</span> takes this
+          as its third argument.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>The pixel</h2>
+      <div class="body">
+        <div class="presets" id="pre">
+          <button data-p="2,2" aria-pressed="true">the appendix pixel [2, 2]</button>
+          <button data-p="3,2">on the ridge [3, 2]</button>
+          <button data-p="4,2">just below the ridge [4, 2]</button>
+        </div>
+        <p class="note">Or click any interior cell of either grid. The border is never tested,
+          which is why the outer ring of the result is always zero.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Verdict</h2>
+      <div class="body">
+        <p style="margin:0 0 10px"><span id="vd" class="verdict">-</span></p>
+        <div class="wgrid">
+          <span class="h">back</span><span class="h">centre</span><span class="h">forward</span><span class="h"></span>
+          <span class="v" id="vB">-</span><span class="v" id="vC">-</span><span class="v" id="vF">-</span><span></span>
+        </div>
+        <p class="note" id="vnote"></p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="stage">
+
+    <div class="boards">
+      <div class="board">
+        <span class="blab">img</span>
+        <div class="pgrid" id="gImg" style="grid-template-columns:repeat(7,1fr)"></div>
+      </div>
+      <div class="board">
+        <span class="blab">grad_norms</span>
+        <div class="pgrid" id="gMag" style="grid-template-columns:repeat(7,1fr)"></div>
+      </div>
+      <div class="board">
+        <span class="blab">after suppression</span>
+        <div class="pgrid" id="gRes" style="grid-template-columns:repeat(7,1fr)"></div>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h2>Where the two probes land</h2>
+      <div class="body">
+        <canvas id="cv" class="stagecv" width="560" height="560"></canvas>
+        <p class="note">The blue dot is the selected pixel, the two orange dots are
+          <span class="mono">[row, col] +/- distance * [sin(theta), cos(theta)]</span>. Neither
+          lands on a pixel centre, which is the entire reason bilinear interpolation appears in
+          this algorithm at all.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>The arithmetic, on this pixel</h2>
+      <div class="body">
+        <ol class="steps" id="work"></ol>
+        <div class="readout" style="margin-top:6px">
+          <div class="sumout"><span class="slab">forward probe, bilinear</span>
+            <span class="sexp" id="bexp">-</span>
+            <span class="sval" id="bval">-</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="codebar">
+      <header><span>the notebook, on this pixel</span>
+        <button class="btn" id="copy" style="padding:3px 10px;font-size:12px;margin-left:auto">Copy</button>
+      </header>
+      <pre id="code"></pre>
+    </div>
+
+  </div>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div><h3>Start with [2, 2]</h3><p>This is the pixel the appendix works through. Its gradient
+      points almost straight down, so the two probes land above and below it, and both are
+      larger. It loses, and it is set to zero.</p></div>
+    <div><h3>Then click [3, 2]</h3><p>One row down, on the ridge itself. Same near-vertical
+      gradient, but now both probes are smaller. It survives at full value. That is the whole
+      algorithm: <b>a ridge is one pixel wide once you only keep its crest.</b></p></div>
+    <div><h3>A bug worth knowing about</h3><p>The notebook's
+      <span class="mono">bilinear_interpolation</span> uses <span class="mono">np.ceil(x)</span>
+      where it means <span class="mono">floor(x) + 1</span>. When a probe lands on an exact
+      integer, which happens whenever the gradient is exactly horizontal or vertical, all four
+      weights collapse to zero and it returns <b>0</b>. That pixel then wins automatically.
+      On the church photograph it inflates the edge count from 3,569 to 4,316. This page uses
+      the corrected version.</p></div>
+    <div><h3>Push the distance</h3><p>At 2 pixels the probes reach past the ridge entirely and
+      the survivor count <b>doubles, from 5 to 10</b>. More, not fewer. The comparison is only
+      meaningful while the step stays inside the width of the edge.</p></div>
+  </div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   Shared helpers for the CS 4337 interactive pages.
+   Plain ES5 so the files run from file:// in any browser in the room.
+   ------------------------------------------------------------------ */
+
+function el(id) { return document.getElementById(id); }
+
+function mk(tag, cls, txt) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined && txt !== null) n.textContent = txt;
+  return n;
+}
+
+/* ---------- images ---------- */
+
+/* Decodes the inlined base64 assets, then hands back {w,h,rgb,gray} per key.
+   gray is a Float32Array so filter output can go negative before clipping. */
+function loadImages(keys, done) {
+  var out = {}, pending = keys.length;
+  if (!pending) return done(out);
+  keys.forEach(function (k) {
+    var im = new Image();
+    im.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = im.width; c.height = im.height;
+      var g = c.getContext("2d");
+      g.drawImage(im, 0, 0);
+      var d = g.getImageData(0, 0, c.width, c.height).data;
+      var n = c.width * c.height;
+      var gray = new Float32Array(n), rgb = new Uint8ClampedArray(d);
+      for (var i = 0; i < n; i++) {
+        gray[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      }
+      out[k] = { w: c.width, h: c.height, gray: gray, rgb: rgb };
+      if (--pending === 0) done(out);
+    };
+    im.src = IMAGES[k];
+  });
+}
+
+/* Paints a single-channel array. clip=true rounds into 0..255 the way uint8
+   storage would; clip=false shifts by +128 so negatives stay visible. */
+function putGray(cv, arr, w, h, clip) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = clip === false ? arr[i] + 128 : arr[i];
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+function putRGB(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h);
+  im.data.set(arr);
+  g.putImageData(im, 0, 0);
+}
+
+/* Paints a 0/1 mask: 1 -> white, 0 -> black, matching a binary cv image. */
+function putMask(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = arr[i] ? 255 : 0;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+/* ---------- borders ---------- */
+
+/* One index, folded back into 0..n-1 by the chosen border rule.
+   Returns -1 for BORDER_CONSTANT, meaning "there is no pixel, use the value". */
+function clampIndex(i, n, mode) {
+  if (i >= 0 && i < n) return i;
+  if (n === 1) return 0;
+  switch (mode) {
+    case "constant":  return -1;
+    case "replicate": return i < 0 ? 0 : n - 1;
+    case "wrap":      return ((i % n) + n) % n;
+    case "reflect":
+      while (i < 0 || i >= n) { if (i < 0) i = -i - 1; if (i >= n) i = 2 * n - i - 1; }
+      return i;
+    default: /* reflect101, filter2D's own default */
+      while (i < 0 || i >= n) { if (i < 0) i = -i; if (i >= n) i = 2 * n - i - 2; }
+      return i;
+  }
+}
+
+/* ---------- filtering ---------- */
+
+/* Correlation, which is what cv.filter2D actually computes. Set flip to get
+   true convolution. k is a flat array of side*side weights. */
+function correlate(src, w, h, k, side, mode, flip, constVal) {
+  var r = side >> 1, out = new Float32Array(w * h), cv0 = constVal || 0;
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var s = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) {
+          var sx = clampIndex(x + dx, w, mode);
+          var val = (sy < 0 || sx < 0) ? cv0 : src[sy * w + sx];
+          var u = flip ? -dy : dy, v = flip ? -dx : dx;
+          s += val * k[(u + r) * side + (v + r)];
+        }
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* A separable pass costs 2k multiplies per pixel instead of k*k. */
+function separable(src, w, h, k1, mode) {
+  var side = k1.length, r = side >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += src[y * w + clampIndex(x + d, w, mode)] * k1[d + r];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * k1[d + r];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+function medianFilter(src, w, h, side, mode) {
+  var r = side >> 1, out = new Float32Array(w * h), buf = new Float32Array(side * side);
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var n = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) buf[n++] = src[sy * w + clampIndex(x + dx, w, mode)];
+      }
+      var a = Array.prototype.slice.call(buf, 0, n).sort(function (p, q) { return p - q; });
+      out[y * w + x] = a[n >> 1];
+    }
+  }
+  return out;
+}
+
+/* cv.getGaussianKernel: a 1D kernel, normalised to sum 1. */
+function gaussian1D(side, sigma) {
+  var r = side >> 1, k = new Float32Array(side), sum = 0;
+  if (!sigma) sigma = 0.3 * ((side - 1) * 0.5 - 1) + 0.8;   // OpenCV's default
+  for (var i = 0; i < side; i++) {
+    k[i] = Math.exp(-((i - r) * (i - r)) / (2 * sigma * sigma));
+    sum += k[i];
+  }
+  for (i = 0; i < side; i++) k[i] /= sum;
+  return k;
+}
+
+/* ---------- histogram ---------- */
+
+function histogram(gray) {
+  var h = new Float64Array(256);
+  for (var i = 0; i < gray.length; i++) {
+    var v = Math.round(gray[i]);
+    h[v < 0 ? 0 : v > 255 ? 255 : v]++;
+  }
+  return h;
+}
+
+/* Within-class variance for every T, which is what Otsu minimises.
+   Returns {v, t, w0, m0, m1} with v[t] = w0*s0^2 + w1*s1^2. */
+function otsuCurve(hist) {
+  var total = 0, sumAll = 0, i;
+  for (i = 0; i < 256; i++) { total += hist[i]; sumAll += i * hist[i]; }
+  var v = new Float64Array(256), w0 = new Float64Array(256),
+      m0 = new Float64Array(256), m1 = new Float64Array(256);
+  var c0 = 0, s0 = 0, best = -1, bestV = Infinity;
+  var varAll = 0;
+  for (i = 0; i < 256; i++) varAll += hist[i] * Math.pow(i - sumAll / total, 2);
+  varAll /= total;
+  for (var t = 0; t < 256; t++) {
+    c0 += hist[t]; s0 += t * hist[t];
+    var c1 = total - c0, mu0 = c0 ? s0 / c0 : 0, mu1 = c1 ? (sumAll - s0) / c1 : 0;
+    w0[t] = c0 / total; m0[t] = mu0; m1[t] = mu1;
+    /* between-class variance is the cheap half; the rest is what is left. */
+    var between = (c0 / total) * (c1 / total) * (mu0 - mu1) * (mu0 - mu1);
+    v[t] = varAll - between;
+    if (c0 && c1 && v[t] < bestV) { bestV = v[t]; best = t; }
+  }
+  return { v: v, t: best, w0: w0, m0: m0, m1: m1, varAll: varAll };
+}
+
+/* ---------- theme-aware canvas drawing ---------- */
+
+var THEME = {};
+function readTheme() {
+  var cs = getComputedStyle(document.documentElement);
+  ["ink", "ink-2", "ink-3", "rule", "rule-2", "accent", "accent-ink", "accent-soft",
+   "warm", "warm-soft", "signal", "signal-soft", "surface", "surface-2", "paper"
+  ].forEach(function (k) { THEME[k] = cs.getPropertyValue("--" + k).trim(); });
+  return THEME;
+}
+
+function onThemeChange(cb) {
+  readTheme();
+  if (window.matchMedia) {
+    var m = window.matchMedia("(prefers-color-scheme: dark)");
+    var h = function () { readTheme(); cb(); };
+    if (m.addEventListener) m.addEventListener("change", h);
+    else if (m.addListener) m.addListener(h);
+  }
+}
+
+/* Canvases are sized in CSS pixels but drawn at device resolution, so the
+   axis text on a projector stays sharp. */
+function fitCanvas(cv, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  cv.style.width = w + "px"; cv.style.height = h + "px";
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  var g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  return g;
+}
+
+/* ---------- code panel ---------- */
+
+var PY_KW = /\b(import|as|for|in|if|else|elif|return|def|not|and|or|True|False|None|while)\b/g;
+
+function hl(code) {
+  var s = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  s = s.replace(/(#[^\n]*)/g, '<span class="cm">$1</span>');
+  s = s.replace(/('[^']*')/g, '<span class="num">$1</span>');
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  s = s.replace(PY_KW, '<span class="kw">$1</span>');
+  s = s.replace(/\b(cv|np|plt)\./g, '<span class="kw">$1</span>.');
+  return s;
+}
+
+/* Every page prints the OpenCV call its controls stand for. */
+function codePanel(id, code) { el(id).innerHTML = hl(code); }
+
+function wireCopy(btn, getText) {
+  btn.addEventListener("click", function () {
+    var t = getText();
+    var ok = function () {
+      var old = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(ok, function () {});
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+}
+
+/* ---------- small utilities ---------- */
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+function fmt(v, n) {
+  if (!isFinite(v)) return "-";
+  var p = Math.pow(10, n === undefined ? 1 : n);
+  return String(Math.round(v * p) / p);
+}
+
+/* A labelled slider that keeps its readout in sync. */
+function bindSlider(inputId, outId, fn, format) {
+  var inp = el(inputId), out = el(outId);
+  var run = function () {
+    if (out) out.textContent = format ? format(+inp.value) : inp.value;
+    fn(+inp.value);
+  };
+  inp.addEventListener("input", run);
+  return run;
+}
+
+/* ---------- connected components ---------- */
+
+/* Labels the non-zero pixels of a binary mask the way
+   cv.connectedComponentsWithStats does: label 0 is the background, new labels
+   are handed out in raster order of the first pixel found, and each entry
+   carries the same left/top/width/height/area that the stats array carries,
+   plus the centroid (the mean column and row of the labelled pixels). */
+function connectedComponents(mask, w, h, connectivity) {
+  var labels = new Int32Array(w * h), stats = [], next = 1;
+  var qx = new Int32Array(w * h), qy = new Int32Array(w * h);
+  var dx = connectivity === 4 ? [1, -1, 0, 0] : [1, -1, 0, 0, 1, 1, -1, -1];
+  var dy = connectivity === 4 ? [0, 0, 1, -1] : [0, 0, 1, -1, 1, -1, 1, -1];
+  for (var y0 = 0; y0 < h; y0++) {
+    for (var x0 = 0; x0 < w; x0++) {
+      var i0 = y0 * w + x0;
+      if (!mask[i0] || labels[i0]) continue;
+      var id = next++, head = 0, tail = 0;
+      qx[0] = x0; qy[0] = y0; tail = 1; labels[i0] = id;
+      var minx = x0, maxx = x0, miny = y0, maxy = y0, area = 0, sx = 0, sy = 0;
+      while (head < tail) {
+        var x = qx[head], y = qy[head]; head++;
+        area++; sx += x; sy += y;
+        if (x < minx) minx = x;
+        if (x > maxx) maxx = x;
+        if (y < miny) miny = y;
+        if (y > maxy) maxy = y;
+        for (var k = 0; k < dx.length; k++) {
+          var nx = x + dx[k], ny = y + dy[k];
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          var j = ny * w + nx;
+          if (mask[j] && !labels[j]) {
+            labels[j] = id; qx[tail] = nx; qy[tail] = ny; tail++;
+          }
+        }
+      }
+      stats.push({
+        label: id, left: minx, top: miny,
+        width: maxx - minx + 1, height: maxy - miny + 1,
+        area: area, cx: sx / area, cy: sy / area
+      });
+    }
+  }
+  return { count: next, labels: labels, stats: stats };
+}
+
+/* The notebook's idiom: the biggest component that is not the background. */
+function largestComponent(cc) {
+  var best = null;
+  for (var i = 0; i < cc.stats.length; i++) {
+    if (!best || cc.stats[i].area > best.area) best = cc.stats[i];
+  }
+  return best;
+}
+
+/* ---------- gradients and edges (lecture 05) ---------- */
+
+/* The 1-D kernel cv.GaussianBlur builds for GaussianBlur(img, (0,0), sigma).
+   OpenCV derives the size from sigma for an 8-bit image as round(6*sigma+1)
+   forced odd, and the weights are cv.getGaussianKernel's, which for an
+   explicit sigma is the plain analytic Gaussian, normalised to sum to one. */
+function gaussianKernelCV(sigma) {
+  var n = Math.round(sigma * 6 + 1) | 1;
+  if (n < 1) n = 1;
+  var r = n >> 1, k = new Float64Array(n), s = 0, i, d;
+  for (i = 0; i < n; i++) { d = i - r; k[i] = Math.exp(-d * d / (2 * sigma * sigma)); s += k[i]; }
+  for (i = 0; i < n; i++) k[i] /= s;
+  return k;
+}
+
+/* Two 1-D passes with different kernels, horizontal first, then vertical.
+   This is how cv.Sobel and cv.GaussianBlur are actually implemented. */
+function sepXY(src, w, h, kx, ky, mode) {
+  var rx = kx.length >> 1, ry = ky.length >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -rx; d <= rx; d++) s += src[y * w + clampIndex(x + d, w, mode)] * kx[d + rx];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -ry; d <= ry; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * ky[d + ry];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* cv.GaussianBlur(img, (0,0), sigma) on an 8-bit image: the result is rounded
+   back into 0..255, which is what the notebook then hands to cv.Sobel. */
+function blurCV(src, w, h, sigma) {
+  if (!(sigma > 0)) return src;
+  var b = sepXY(src, w, h, gaussianKernelCV(sigma), gaussianKernelCV(sigma), "reflect101");
+  var out = new Float32Array(w * h);
+  for (var i = 0; i < w * h; i++) {
+    var v = Math.round(b[i]);
+    out[i] = v < 0 ? 0 : v > 255 ? 255 : v;
+  }
+  return out;
+}
+
+/* cv.Sobel(src, CV_64F, 1, 0, ksize=3) and its dy twin. The kernel is
+   unnormalised, exactly as OpenCV leaves it. */
+function sobel3(src, w, h, dx) {
+  var der = [-1, 0, 1], smo = [1, 2, 1];
+  return dx ? sepXY(src, w, h, der, smo, "reflect101")
+            : sepXY(src, w, h, smo, der, "reflect101");
+}
+
+/* Gradient magnitude and direction. L2 is sqrt(gx^2+gy^2), the L2gradient=True
+   branch of cv.Canny; L1 is |gx|+|gy|, which is what it uses by default. */
+function gradient(src, w, h, l2) {
+  var gx = sobel3(src, w, h, 1), gy = sobel3(src, w, h, 0);
+  var n = w * h, mag = new Float32Array(n), dir = new Float32Array(n);
+  for (var i = 0; i < n; i++) {
+    mag[i] = l2 === false ? Math.abs(gx[i]) + Math.abs(gy[i])
+                          : Math.sqrt(gx[i] * gx[i] + gy[i] * gy[i]);
+    dir[i] = Math.atan2(gy[i], gx[i]);
+  }
+  return { gx: gx, gy: gy, mag: mag, dir: dir };
+}
+
+/* Bilinear sample of a single-channel array, clamping at the border the way the
+   notebook's bilinear_interpolation does. */
+function sampleBilinear(a, w, h, x, y) {
+  var x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+  var x1 = x0 + 1, y1 = y0 + 1;
+  x0 = clamp(x0, 0, w - 1); x1 = clamp(x1, 0, w - 1);
+  y0 = clamp(y0, 0, h - 1); y1 = clamp(y1, 0, h - 1);
+  return a[y0 * w + x0] * (1 - fx) * (1 - fy) + a[y0 * w + x1] * fx * (1 - fy)
+       + a[y1 * w + x0] * (1 - fx) * fy + a[y1 * w + x1] * fx * fy;
+}
+
+/* Non-maxima suppression the way the notebook does it: step one unit forward
+   and one unit back along the gradient, interpolate, and keep the pixel only if
+   it is at least as large as both. cv.Canny quantises the direction into four
+   bins instead, which is why the two results differ slightly. */
+function nmsBilinear(mag, dir, w, h, dist) {
+  var out = new Float32Array(w * h), d = dist || 1;
+  for (var y = 1; y < h - 1; y++) {
+    for (var x = 1; x < w - 1; x++) {
+      var i = y * w + x, a = dir[i], ux = Math.cos(a) * d, uy = Math.sin(a) * d;
+      var c = mag[i];
+      if (c >= sampleBilinear(mag, w, h, x + ux, y + uy) &&
+          c >= sampleBilinear(mag, w, h, x - ux, y - uy)) out[i] = c;
+    }
+  }
+  return out;
+}
+
+/* Hysteresis thresholding, the notebook's hysthresh: everything above t1 is a
+   candidate, and a candidate survives only if its 8-connected component of
+   candidates contains at least one pixel above t2. Returns the mask plus the
+   three populations the page paints in different colours. */
+function hysteresis(sup, w, h, t1, t2) {
+  if (t2 < t1) { var s = t1; t1 = t2; t2 = s; }
+  var n = w * h, cand = new Uint8Array(n), i;
+  for (i = 0; i < n; i++) cand[i] = sup[i] > t1 ? 1 : 0;
+  var cc = connectedComponents(cand, w, h, 8);
+  var strong = new Uint8Array(cc.count);
+  for (i = 0; i < n; i++) if (sup[i] > t2 && cc.labels[i]) strong[cc.labels[i]] = 1;
+  var mask = new Uint8Array(n), nStrong = 0, nRescued = 0, nDropped = 0;
+  for (i = 0; i < n; i++) {
+    if (!cand[i]) continue;
+    if (strong[cc.labels[i]]) {
+      mask[i] = 1;
+      if (sup[i] > t2) nStrong++; else nRescued++;
+    } else nDropped++;
+  }
+  return { mask: mask, labels: cc.labels, strong: strong,
+           nStrong: nStrong, nRescued: nRescued, nDropped: nDropped };
+}
+
+
+var IMG = [
+  [112, 118, 111, 115, 112, 115, 112],
+  [120, 124, 128, 128, 126, 128, 126],
+  [132, 134, 132, 130, 130, 130, 130],
+  [167, 165, 163, 162, 161, 162, 161],
+  [190, 192, 199, 196, 198, 196, 198],
+  [203, 205, 203, 205, 207, 205, 207],
+  [212, 214, 216, 219, 216, 213, 217]
+];
+var N = 7, S = { r: 2, c: 2, dist: 1 };
+
+/* np.gradient: a central difference inside, a one-sided difference at the edge. */
+function grad(a, r, c, axis) {
+  if (axis === 1) {
+    if (c === 0) return a[r][1] - a[r][0];
+    if (c === N - 1) return a[r][N - 1] - a[r][N - 2];
+    return (a[r][c + 1] - a[r][c - 1]) / 2;
+  }
+  if (r === 0) return a[1][c] - a[0][c];
+  if (r === N - 1) return a[N - 1][c] - a[N - 2][c];
+  return (a[r + 1][c] - a[r - 1][c]) / 2;
+}
+
+var MAG = [], THETA = [];
+(function () {
+  for (var r = 0; r < N; r++) {
+    MAG.push([]); THETA.push([]);
+    for (var c = 0; c < N; c++) {
+      var gx = grad(IMG, r, c, 1), gy = grad(IMG, r, c, 0);
+      MAG[r].push(Math.sqrt(gx * gx + gy * gy));
+      THETA[r].push(Math.atan2(gy, gx));
+    }
+  }
+})();
+
+function bil(row, col) {
+  var r0 = Math.floor(row), c0 = Math.floor(col), fr = row - r0, fc = col - c0;
+  var r1 = clamp(r0 + 1, 0, N - 1), c1 = clamp(c0 + 1, 0, N - 1);
+  r0 = clamp(r0, 0, N - 1); c0 = clamp(c0, 0, N - 1);
+  return { v: MAG[r0][c0] * (1 - fc) * (1 - fr) + MAG[r0][c1] * fc * (1 - fr)
+            + MAG[r1][c0] * (1 - fc) * fr + MAG[r1][c1] * fc * fr,
+           r0: r0, c0: c0, r1: r1, c1: c1, fr: fr, fc: fc };
+}
+
+function probes(r, c, d) {
+  var t = THETA[r][c], dr = Math.sin(t) * d, dc = Math.cos(t) * d;
+  return { t: t, dr: dr, dc: dc,
+           fwd: { r: r + dr, c: c + dc }, back: { r: r - dr, c: c - dc } };
+}
+
+function suppressed() {
+  var out = [];
+  for (var r = 0; r < N; r++) {
+    out.push([]);
+    for (var c = 0; c < N; c++) {
+      if (r === 0 || c === 0 || r === N - 1 || c === N - 1) { out[r].push(0); continue; }
+      var p = probes(r, c, S.dist);
+      var m = MAG[r][c];
+      out[r].push(m >= bil(p.fwd.r, p.fwd.c).v && m >= bil(p.back.r, p.back.c).v ? m : 0);
+    }
+  }
+  return out;
+}
+
+function board(id, vals, opts) {
+  var box = el(id); box.innerHTML = "";
+  for (var r = 0; r < N; r++) {
+    for (var c = 0; c < N; c++) {
+      var cls = "pc", v = vals[r][c];
+      var inner = r > 0 && c > 0 && r < N - 1 && c < N - 1;
+      if (inner) cls += " pick";
+      if (r === S.r && c === S.c) cls += " sel";
+      else if (opts.nb && opts.nb.some(function (p) { return p[0] === r && p[1] === c; })) cls += " nb";
+      else if (opts.zero && v === 0) cls += " kill";
+      var d = mk("div", cls, opts.round ? String(Math.round(v)) : String(v));
+      d.dataset.r = r; d.dataset.c = c;
+      box.appendChild(d);
+    }
+  }
+  box.onclick = function (e) {
+    var t = e.target.closest(".pick"); if (!t) return;
+    S.r = +t.dataset.r; S.c = +t.dataset.c;
+    [].forEach.call(el("pre").children, function (b) { b.setAttribute("aria-pressed", "false"); });
+    draw();
+  };
+}
+
+function drawCanvas(p) {
+  var cv = el("cv"), g = cv.getContext("2d");
+  var W = cv.width, cell = W / N;
+  g.clearRect(0, 0, W, W);
+  var T = readTheme();
+  for (var r = 0; r < N; r++) {
+    for (var c = 0; c < N; c++) {
+      var v = MAG[r][c] / 34 * 200;
+      g.fillStyle = "rgb(" + [v, v, v].map(Math.round).join(",") + ")";
+      g.fillRect(c * cell, r * cell, cell, cell);
+    }
+  }
+  g.strokeStyle = "rgba(255,255,255,.18)"; g.lineWidth = 1;
+  for (var i = 0; i <= N; i++) {
+    g.beginPath(); g.moveTo(i * cell, 0); g.lineTo(i * cell, W); g.stroke();
+    g.beginPath(); g.moveTo(0, i * cell); g.lineTo(W, i * cell); g.stroke();
+  }
+  var cx = (S.c + 0.5) * cell, cy = (S.r + 0.5) * cell;
+  var fx = (p.fwd.c + 0.5) * cell, fy = (p.fwd.r + 0.5) * cell;
+  var bx = (p.back.c + 0.5) * cell, by = (p.back.r + 0.5) * cell;
+  g.strokeStyle = "#E0A83F"; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(bx, by); g.lineTo(fx, fy); g.stroke();
+  [[fx, fy], [bx, by]].forEach(function (q) {
+    g.fillStyle = "#E0A83F"; g.beginPath(); g.arc(q[0], q[1], 8, 0, 7); g.fill();
+    g.strokeStyle = "#3A2610"; g.lineWidth = 2; g.stroke();
+  });
+  g.fillStyle = "#6FA8E0"; g.beginPath(); g.arc(cx, cy, 10, 0, 7); g.fill();
+  g.strokeStyle = "#12314F"; g.lineWidth = 2; g.stroke();
+  g.font = "600 13px monospace"; g.fillStyle = "#FFFFFF"; g.textAlign = "center";
+  g.fillText("[" + S.r + ", " + S.c + "]", cx, cy - 16);
+}
+
+function draw() {
+  var p = probes(S.r, S.c, S.dist);
+  var f = bil(p.fwd.r, p.fwd.c), b = bil(p.back.r, p.back.c);
+  var m = MAG[S.r][S.c], keep = m >= f.v && m >= b.v;
+  var res = suppressed();
+
+  board("gImg", IMG, {});
+  board("gMag", MAG, { round: true, nb: [[f.r0, f.c0], [f.r0, f.c1], [f.r1, f.c0], [f.r1, f.c1]] });
+  board("gRes", res, { round: true, zero: true });
+  drawCanvas(p);
+
+  el("vd").className = "verdict " + (keep ? "keep" : "drop");
+  el("vd").textContent = keep ? "kept, value " + fmt(m, 1) : "set to zero";
+  el("vB").textContent = fmt(b.v, 1);
+  el("vC").textContent = fmt(m, 1);
+  el("vF").textContent = fmt(f.v, 1);
+  el("vnote").innerHTML = keep
+    ? "The centre is at least as large as both probes, so it is the crest of the ridge along its own gradient."
+    : "The centre is smaller than <b>" + (f.v > m && b.v > m ? "both probes" : "one probe") +
+      "</b>, so something along the gradient is a better edge than it is.";
+
+  var gx = grad(IMG, S.r, S.c, 1), gy = grad(IMG, S.r, S.c, 0);
+  var w = el("work"); w.innerHTML = "";
+  [
+    "<b>dx</b> = (img[" + S.r + ", " + (S.c + 1) + "] - img[" + S.r + ", " + (S.c - 1) + "]) / 2 = " +
+      "(" + IMG[S.r][S.c + 1] + " - " + IMG[S.r][S.c - 1] + ") / 2 = <b>" + fmt(gx, 2) + "</b>",
+    "<b>dy</b> = (img[" + (S.r + 1) + ", " + S.c + "] - img[" + (S.r - 1) + ", " + S.c + "]) / 2 = " +
+      "(" + IMG[S.r + 1][S.c] + " - " + IMG[S.r - 1][S.c] + ") / 2 = <b>" + fmt(gy, 2) + "</b>",
+    "<b>grad_norms[" + S.r + ", " + S.c + "]</b> = sqrt(" + fmt(gx, 2) + "^2 + " + fmt(gy, 2) +
+      "^2) = <b>" + fmt(m, 2) + "</b>",
+    "<b>theta</b> = atan2(" + fmt(gy, 2) + ", " + fmt(gx, 2) + ") = " + fmt(p.t, 4) + " rad = <b>" +
+      fmt(p.t * 180 / Math.PI, 1) + " degrees</b>",
+    "<b>step</b> = " + fmt(S.dist, 1) + " * [sin theta, cos theta] = [" + fmt(p.dr, 4) + ", " +
+      fmt(p.dc, 4) + "] in (row, column)",
+    "<b>probes</b> at [" + fmt(p.fwd.r, 4) + ", " + fmt(p.fwd.c, 4) + "] and [" +
+      fmt(p.back.r, 4) + ", " + fmt(p.back.c, 4) + "], neither of them a pixel centre"
+  ].forEach(function (t) { var li = mk("li", "", ""); li.innerHTML = t; w.appendChild(li); });
+
+  var tl = MAG[f.r0][f.c0], tr = MAG[f.r0][f.c1], bl = MAG[f.r1][f.c0], br = MAG[f.r1][f.c1];
+  el("bexp").innerHTML =
+    "(1-" + fmt(f.fc, 3) + ")(1-" + fmt(f.fr, 3) + ")*" + fmt(tl, 1) + " + " +
+    fmt(f.fc, 3) + "(1-" + fmt(f.fr, 3) + ")*" + fmt(tr, 1) + " + " +
+    "(1-" + fmt(f.fc, 3) + ")" + fmt(f.fr, 3) + "*" + fmt(bl, 1) + " + " +
+    fmt(f.fc, 3) + "*" + fmt(f.fr, 3) + "*" + fmt(br, 1);
+  el("bval").textContent = fmt(f.v, 2);
+
+  codePanel("code",
+    "gy, gx = np.gradient(img)\n" +
+    "grad_norms = np.sqrt(gx**2 + gy**2)\n" +
+    "thetas = np.rad2deg(np.arctan2(gy, gx))\n\n" +
+    "row, col = " + S.r + ", " + S.c + "\n" +
+    "angle = np.deg2rad(thetas[row, col])                 # " + fmt(p.t * 180 / Math.PI, 1) + " degrees\n" +
+    "displacement = np.array([np.sin(angle), np.cos(angle)]) * " + fmt(S.dist, 1) + "\n\n" +
+    "centre = grad_norms[row, col]                        # " + fmt(m, 2) + "\n" +
+    "v1 = bilinear_interpolation(grad_norms, row + displacement[0], col + displacement[1])\n" +
+    "v2 = bilinear_interpolation(grad_norms, row - displacement[0], col - displacement[1])\n" +
+    "#    v1 = " + fmt(f.v, 2) + ", v2 = " + fmt(b.v, 2) + "\n\n" +
+    "result[row, col] = centre if centre >= v1 and centre >= v2 else 0   # " +
+      (keep ? fmt(m, 2) : "0"));
+}
+
+bindSlider("dist", "distv", function (v) { S.dist = v / 4; draw(); }, function (v) { return fmt(v / 4, 2); });
+el("pre").addEventListener("click", function (e) {
+  var b = e.target.closest("button"); if (!b) return;
+  var p = b.dataset.p.split(","); S.r = +p[0]; S.c = +p[1];
+  [].forEach.call(el("pre").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+  draw();
+});
+wireCopy(el("copy"), function () { return el("code").textContent; });
+onThemeChange(draw);
+draw();
+</script>
+</body>
+</html>

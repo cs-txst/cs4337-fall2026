@@ -3,12 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CS 4337 Interactive Visualizations</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<title>Lecture 05 Demos</title>
 <style>
-*{box-sizing:border-box}
-img{max-width:100%}
-[hidden]{display:none !important}
 
 :root{
   --paper:#F4F6F9;
@@ -329,7 +325,46 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
   *{transition:none !important;animation:none !important}
 }
 
+.up{
+  display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  text-decoration:none;
+}
+.up:hover{color:var(--accent)}
 main{grid-template-columns:minmax(0,1fr)}
+.sect{margin-bottom:30px}
+.secthead{
+  display:flex;align-items:baseline;gap:12px;margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1px solid var(--rule);
+}
+.secthead h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.secthead span{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);margin-left:auto;
+}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(305px,1fr));gap:16px}
+a.card{
+  display:flex;flex-direction:column;gap:9px;text-decoration:none;color:inherit;
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  padding:16px 18px;box-shadow:var(--shadow);
+  transition:border-color .12s, transform .12s;
+}
+a.card:hover{border-color:var(--accent);transform:translateY(-1px)}
+a.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a.card h3{margin:0;font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+a.card p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+a.card .meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+a.card .tag{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:20px;
+  padding:2px 9px;color:var(--ink-3);
+}
+a.card .tag.slides{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent-ink)}
+a.card .ask{
+  font-size:12.5px;color:var(--ink-3);border-left:2px solid var(--signal);
+  padding-left:10px;line-height:1.45;margin-top:3px;
+}
+a.card .ask b{color:var(--signal)}
 .lead{
   background:var(--surface);border:1px solid var(--rule);border-radius:6px;
   padding:18px 20px;margin-bottom:26px;box-shadow:var(--shadow);
@@ -340,47 +375,24 @@ main{grid-template-columns:minmax(0,1fr)}
   letter-spacing:.11em;text-transform:uppercase;color:var(--accent);font-weight:600;
 }
 .lead div p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
-.lect{
-  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
-  box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;
+.up{
+  display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  text-decoration:none;
 }
-.lect > header{
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;
-  padding:15px 20px;border-bottom:1px solid var(--rule);background:var(--surface-2);
-}
-.lect > header h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
-.lect > header h2 a{color:inherit;text-decoration:none}
-.lect > header h2 a:hover{color:var(--accent)}
-.lect > header .num{
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
-  color:var(--accent);font-weight:600;
-}
-.lect > header .count{
-  margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11px;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
-}
-.lect .body{padding:16px 20px 20px}
-.lect .body > p{margin:0 0 14px;font-size:13.5px;color:var(--ink-2);max-width:78ch}
-.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
-.links a{
-  display:flex;flex-direction:column;gap:2px;padding:9px 12px;text-decoration:none;
-  border:1px solid var(--rule);border-radius:5px;background:var(--surface);
-}
-.links a:hover{border-color:var(--accent)}
-.links a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.links a b{font-size:13.5px;font-weight:600;color:var(--ink)}
-.links a span{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+.up:hover{color:var(--accent)}
 </style>
 </head>
 <body>
 <header class="pagehead">
   <div class="wrap">
     <div>
-      <span class="eyebrow">CS 4337 / Introduction to Computer Vision</span>
-      <h1>Interactive Visualizations</h1>
+      <a class="up" href="../index.html">&#8592; all lectures</a>
+      <span class="eyebrow">CS 4337 / Lecture 05</span>
+      <h1>Edge Detection Demos</h1>
     </div>
-    <p>Standalone browser demos that go with the lecture slides and the course notebooks.
-      Every page runs offline from a file, with no installs and no network.</p>
+    <p>Seven interactive pages for Edge Detection. Each one opens on its own, runs offline,
+      and prints the OpenCV call behind every control.</p>
   </div>
 </header>
 
@@ -389,103 +401,140 @@ main{grid-template-columns:minmax(0,1fr)}
 
     <div class="lead">
       <div>
-        <h4>What these are for</h4>
-        <p>Each page takes one idea the slides can only show as a finished picture and puts
-          the parameter that produced it on a control, so you can watch it move.</p>
+        <h4>One idea per page</h4>
+        <p>Each page isolates a single step or a single trap. Reloading a page puts every
+          control back to the value the lecture uses.</p>
       </div>
       <div>
-        <h4>How to run them</h4>
-        <p>Open any <code>.html</code> file in a browser, from a folder or a USB stick. There
-          is no build step, no server and no dependency to install.</p>
+        <h4>They run offline</h4>
+        <p>No network, no installs, no libraries. The photographs and every line of code are
+          inside the file, so a copied folder or a USB stick works exactly the same.</p>
       </div>
       <div>
-        <h4>The numbers are real</h4>
-        <p>Where a page reports a count or a coordinate, it was checked against the same call
-          in OpenCV 4.10 on the same input, not against the page's own arithmetic.</p>
+        <h4>Real photographs, real numbers</h4>
+        <p>The church is the image the course notebook opens; the other photograph is the one
+          on the deck's own slides. Every count on screen was checked against the same call
+          in OpenCV 4.10.</p>
       </div>
     </div>
 
-    <section class="lect">
-      <header>
-        <span class="num">03</span>
-        <h2><a href="03-motion-detection/index.html">Motion Detection</a></h2>
-        <span class="count">4 demos</span>
-      </header>
-      <div class="body">
-        <p>Our first computer vision application: frame differencing, the three-frame
-          minimum, thresholding, connected components and the two ways to report a
-          position. The video pages use real frames from the highway clip.</p>
-        <div class="links">
-          <a href="03-motion-detection/uint8-wraparound.html"><b>The Pixel That Wrapped Around</b><span>slide 6</span></a>
-          <a href="03-motion-detection/three-frame-differencing.html"><b>Two Ghosts, One Car</b><span>slides 7 to 10</span></a>
-          <a href="03-motion-detection/connected-components.html"><b>Finding the Car Among the Leaves</b><span>slides 13 to 20, 29</span></a>
-          <a href="03-motion-detection/box-center-vs-centroid.html"><b>Two Different Centers</b><span>slides 21 to 28</span></a>
-        </div>
-      </div>
-    </section>
+    <div class="sect">
+      <div class="secthead"><h2>Taking a derivative of a picture</h2><span>deck slides 40 to 43</span></div>
+      <div class="cards">
 
-    <section class="lect">
-      <header>
-        <span class="num">04</span>
-        <h2><a href="04-thresholds-morphological-operations-and-filters/index.html">Thresholds, Morphological Operations and Filters</a></h2>
-        <span class="count">10 demos</span>
-      </header>
-      <div class="body">
-        <p>Where a threshold should go and who decides, what a structuring element does one
-          pass at a time, and what a kernel is before it is a layer in a network.</p>
-        <div class="links">
-          <a href="04-thresholds-morphological-operations-and-filters/threshold-explorer.html"><b>Threshold Explorer</b><span>slides 5 to 10, 63</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/adaptive-threshold.html"><b>Shadow on the Page</b><span>slides 7, 8, 22</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/morphology-sandbox.html"><b>Morphology Sandbox</b><span>slides 11 to 16</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/tennis-court-pipeline.html"><b>Finding the Court</b><span>slides 17 to 21</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/kernel-playground.html"><b>Kernel Playground</b><span>slides 30 to 35, 39, 53 to 54</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/border-modes.html"><b>Off the Edge</b><span>slide 39</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/separability.html"><b>Two Passes, One Blur</b><span>slide 43</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/gaussian-kernel.html"><b>The Shape of a Gaussian</b><span>slides 40 to 42</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/mean-vs-median.html"><b>Mean versus Median</b><span>slide 45</span></a>
-          <a href="04-thresholds-morphological-operations-and-filters/frame-differencing.html"><b>What Moved</b><span>slides 46, 47</span></a>
-        </div>
-      </div>
-    </section>
+        <a class="card" href="ddepth-trap.html">
+          <h3>The Argument That Eats Your Edges</h3>
+          <p>The same Sobel kernel run two ways, with the pixels the broken version silently
+            discards painted in. The slide's own figures were made the correct way.</p>
+          <div class="meta"><span class="tag slides">slides 40 to 43</span>
+            <span class="tag">uint8 against float</span><span class="tag">35 percent lost</span></div>
+          <span class="ask"><b>TRY:</b> before you look, what does the third argument of
+            <code>filter2D</code> do to a negative filter response?</span>
+        </a>
 
-    <section class="lect">
-      <header>
-        <span class="num">05</span>
-        <h2><a href="05-edge-detection/index.html">Edge Detection</a></h2>
-        <span class="count">7 demos</span>
-      </header>
-      <div class="body">
-        <p>What a derivative of a picture actually is, what smoothing buys and what it costs,
-          and Canny taken apart into the four steps it is made of. The photographs are the
-          ones the notebook and the deck already use.</p>
-        <div class="links">
-          <a href="05-edge-detection/ddepth-trap.html"><b>The Argument That Eats Your Edges</b><span>slides 40 to 43</span></a>
-          <a href="05-edge-detection/smoothing-vs-localization.html"><b>Sharper or Steadier</b><span>slides 19, 20, 42, 43</span></a>
-          <a href="05-edge-detection/gradient-direction.html"><b>Which Way Is the Edge Facing?</b><span>slides 47, 48, 63 to 66</span></a>
-          <a href="05-edge-detection/orientation-histogram.html"><b>Where the Edges Point</b><span>notebook</span></a>
-          <a href="05-edge-detection/canny-pipeline.html"><b>Canny, One Step at a Time</b><span>slides 34, 35, 54 to 62</span></a>
-          <a href="05-edge-detection/hysteresis.html"><b>Two Thresholds, Three Colours</b><span>slides 58, 59</span></a>
-          <a href="05-edge-detection/nms-worked-example.html"><b>One Pixel, Decided by Hand</b><span>slides 69 to 79</span></a>
-        </div>
+        <a class="card" href="smoothing-vs-localization.html">
+          <h3>Sharper or Steadier</h3>
+          <p>One sigma slider with both sides of the tradeoff measured: how many false peaks
+            the noise makes, and how much of a small feature survives the blur.</p>
+          <div class="meta"><span class="tag slides">slides 19, 20, 42, 43</span>
+            <span class="tag">one slider</span><span class="tag">seeded noise</span></div>
+          <span class="ask"><b>TRY:</b> slide 20 shows 1, 3 and 7 pixels. Which is right?
+            Commit to an answer, then look for what makes the question ill-posed.</span>
+        </a>
+
       </div>
-    </section>
+    </div>
+
+    <div class="sect">
+      <div class="secthead"><h2>Direction, and the conventions around it</h2><span>deck slides 47, 48, 63 to 66</span></div>
+      <div class="cards">
+
+        <a class="card" href="gradient-direction.html">
+          <h3>Which Way Is the Edge Facing?</h3>
+          <p>Click any pixel and see the gradient arrow, the edge it crosses, and the same
+            one angle written out under six different conventions at once.</p>
+          <div class="meta"><span class="tag slides">slides 47, 48, 63 to 66</span>
+            <span class="tag">click a pixel</span><span class="tag">six conventions</span></div>
+          <span class="ask"><b>TRY:</b> click the two sides of one window frame. Same edge or
+            two different edges? The answer depends on which row you read.</span>
+        </a>
+
+        <a class="card" href="orientation-histogram.html">
+          <h3>Where the Edges Point</h3>
+          <p>The notebook's orientation histogram, with every bar clickable. Find out which
+            pixels voted for the peak, and what happens when they all vote equally.</p>
+          <div class="meta"><span class="tag">notebook</span>
+            <span class="tag">click a bar</span><span class="tag">leads to Lecture 08</span></div>
+          <span class="ask"><b>TRY:</b> the peak sits at zero degrees. Does that mean the
+            edges are horizontal or vertical? Be sure before you check.</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="secthead"><h2>Canny, end to end</h2><span>deck slides 34, 35, 54 to 62</span></div>
+      <div class="cards">
+
+        <a class="card" href="canny-pipeline.html">
+          <h3>Canny, One Step at a Time</h3>
+          <p>All four steps, all five intermediate pictures, every threshold exposed, and a
+            count of what each step threw away.</p>
+          <div class="meta"><span class="tag slides">slides 34, 35, 54 to 62</span>
+            <span class="tag">the whole pipeline</span><span class="tag">sigma, t1, t2</span></div>
+          <span class="ask"><b>TRY:</b> set sigma to zero. Which of the four steps does
+            <code>cv.Canny</code> refuse to do for you, and what does it cost?</span>
+        </a>
+
+        <a class="card" href="hysteresis.html">
+          <h3>Two Thresholds, Three Colours</h3>
+          <p>Every candidate pixel painted by how it survived. Click any chain to see whether
+            it contains a strong pixel, which is the only thing that saves it.</p>
+          <div class="meta"><span class="tag slides">slides 58, 59</span>
+            <span class="tag">t1 and t2</span><span class="tag">click a chain</span></div>
+          <span class="ask"><b>TRY:</b> why two thresholds and not one? Set them equal and
+            watch which number goes to zero.</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="secthead"><h2>The appendix, made clickable</h2><span>deck slides 69 to 79</span></div>
+      <div class="cards">
+
+        <a class="card" href="nms-worked-example.html">
+          <h3>One Pixel, Decided by Hand</h3>
+          <p>The 7 by 7 patch from the appendix, with every pixel clickable, the two probe
+            points drawn where they land, and the four interpolation weights spelled out.</p>
+          <div class="meta"><span class="tag slides">slides 69 to 79</span>
+            <span class="tag">click any pixel</span><span class="tag">bilinear weights</span></div>
+          <span class="ask"><b>TRY:</b> pixel [2, 2] loses and [3, 2] survives. Work out why
+            from the two probe values before reading the verdict.</span>
+        </a>
+
+      </div>
+    </div>
 
   </div>
 </main>
 
 <footer class="pagefoot">
   <div class="wrap">
-    <div><h3>One idea per page</h3><p>Each page isolates a single idea rather than running
-      the whole pipeline at once. Reloading a page puts every control back to the value the
-      lecture uses.</p></div>
-    <div><h3>Predict, then look</h3><p>Every page carries a <code>TRY</code> line on its
-      lecture index. These are built for prediction first and reveal second: reading the
-      answer straight off the screen spends the best part of them.</p></div>
-    <div><h3>Editing</h3><p>One file, one demo. The CSS, the JavaScript and any images are
-      inline, so changing a default means opening the file, changing a number and
-      reloading.</p></div>
-    <div><h3>Reusing</h3><p>These are plain HTML pages under no framework. Copy a folder
-      anywhere, serve it from GitHub Pages, or keep a single file on a laptop.</p></div>
+    <div><h3>An order that works</h3><p>The Argument That Eats Your Edges first, because
+      everything after it depends on computing a derivative correctly. Then Sharper or
+      Steadier, then Canny One Step at a Time. Two Thresholds and One Pixel both expand a
+      single step of that pipeline, so they come after it.</p></div>
+    <div><h3>The central one</h3><p>Canny, One Step at a Time covers the whole second half of
+      the deck. It is the only place where the four steps stop being a numbered list and
+      become five pictures you can push around.</p></div>
+    <div><h3>Editing them</h3><p>Each file is standalone HTML with its CSS, its JavaScript and
+      its photographs inline. Open one in any editor, change a number, reload. Nothing needs
+      building and nothing needs installing.</p></div>
+    <div><h3>Every number is checkable</h3><p>The blur kernels, Sobel responses, gradient
+      magnitudes, suppression results and edge counts were verified against OpenCV 4.10 before
+      being printed. Where a page differs from the library on purpose, it says so and gives the
+      measured size of the difference.</p></div>
   </div>
 </footer>
 </body>

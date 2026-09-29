@@ -410,7 +410,7 @@ a.card .ask b{color:var(--signal)}
     </div>
 
     <div class="sect">
-      <div class="secthead"><h2>Detection: where to look, and at what size</h2><span>deck slides 17 to 57</span></div>
+      <div class="secthead"><h2>Detection: where to look, and at what size</h2><span>deck slides 17 to 58</span></div>
       <div class="cards">
 
         <a class="card" href="harris-cornerness.html">
@@ -424,7 +424,7 @@ a.card .ask b{color:var(--signal)}
         <a class="card" href="characteristic-scale.html">
           <h3>Choosing Sigma From the Image</h3>
           <p>The same field of sunflowers at full size and at three quarters. Click a flower and the two response curves peak at different sigma, and the ratio of the peaks recovers the size change.</p>
-          <div class="meta"><span class="tag slides">slides 35 to 57</span>
+          <div class="meta"><span class="tag slides">slides 35 to 58</span>
             <span class="tag">sigma ladder</span><span class="tag">normalization toggle</span></div>
           <span class="ask"><b>TRY:</b> predict the ratio of the two peaks before you click. Then switch the sigma squared normalization off and see what the ratio becomes.</span>
         </a>
@@ -433,13 +433,13 @@ a.card .ask b{color:var(--signal)}
     </div>
 
     <div class="sect">
-      <div class="secthead"><h2>Description: turning a patch into numbers</h2><span>deck slides 67 to 78</span></div>
+      <div class="secthead"><h2>Description: turning a patch into numbers</h2><span>deck slides 68 to 79</span></div>
       <div class="cards">
 
         <a class="card" href="hog-builder.html">
           <h3>Cells, Blocks and 3,780</h3>
           <p>A tennis player cropped to exactly the 64 by 128 window OpenCV's person detector expects. Hover a cell for its nine-bin histogram, and take the descriptor length apart into the numbers that produce it.</p>
-          <div class="meta"><span class="tag slides">slides 68 to 72</span>
+          <div class="meta"><span class="tag slides">slides 69 to 73</span>
             <span class="tag">cell, block, stride, bins</span><span class="tag">signed toggle</span></div>
           <span class="ask"><b>TRY:</b> the lecture says 324 and the notebook prints 3,780. Set the sliders so the readout gives each one, and see what had to change.</span>
         </a>
@@ -447,7 +447,7 @@ a.card .ask b{color:var(--signal)}
         <a class="card" href="rotation-invariance.html">
           <h3>Turning the Patch Straight</h3>
           <p>Turn one patch with a dial. A raw pixel list stops matching at once, a gradient histogram is worse, and the same histogram taken after the patch is turned upright barely moves at all.</p>
-          <div class="meta"><span class="tag slides">slides 67, 73 to 78</span>
+          <div class="meta"><span class="tag slides">slides 68, 74 to 79</span>
             <span class="tag">rotation dial</span><span class="tag">three descriptors</span></div>
           <span class="ask"><b>TRY:</b> a histogram already ignores where each gradient sat in the patch. Predict whether that alone survives rotation, then watch the grey curve.</span>
         </a>
@@ -456,13 +456,13 @@ a.card .ask b{color:var(--signal)}
     </div>
 
     <div class="sect">
-      <div class="secthead"><h2>Matching: deciding what counts as the same point</h2><span>deck slides 84 to 88</span></div>
+      <div class="secthead"><h2>Matching: deciding what counts as the same point</h2><span>deck slides 85 to 89</span></div>
       <div class="cards">
 
         <a class="card" href="ratio-test.html">
           <h3>Why 0.75</h3>
           <p>All 3,347 SIFT descriptors of a photograph matched against the same photograph at half size, where the right answer is known exactly. Move Lowe's threshold and grade it: precision, recall, and the two populations it separates.</p>
-          <div class="meta"><span class="tag slides">slides 84 to 88</span>
+          <div class="meta"><span class="tag slides">slides 85 to 89</span>
             <span class="tag">ratio slider</span><span class="tag">3,347 real matches</span></div>
           <span class="ask"><b>TRY:</b> set the threshold to 1.00, which switches the test off entirely. Guess what fraction of nearest neighbors are right before you look.</span>
         </a>

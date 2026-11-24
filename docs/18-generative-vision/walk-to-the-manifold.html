@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walk to the Manifold</title>
+<style>
+
+:root{
+  --paper:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface-2:#EDF1F6;
+  --ink:#16233A;
+  --ink-2:#4A5A72;
+  --ink-3:#7A889C;
+  --rule:#D3DBE6;
+  --rule-2:#BCC7D6;
+  --accent:#2F6FB5;
+  --accent-ink:#1F3763;
+  --accent-soft:#DCE6F1;
+  --warm:#C2542F;
+  --warm-soft:#F6E3DC;
+  --signal:#C8801A;
+  --signal-soft:#FBEBD2;
+  --shadow:0 1px 2px rgba(22,35,58,.06), 0 8px 24px -12px rgba(22,35,58,.22);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#101823;
+    --surface:#17202D;
+    --surface-2:#1E2937;
+    --ink:#E6EDF6;
+    --ink-2:#A9B7C9;
+    --ink-3:#7A889C;
+    --rule:#2A3646;
+    --rule-2:#3A4859;
+    --accent:#6FA8E0;
+    --accent-ink:#A9CCEE;
+    --accent-soft:#1D3149;
+    --warm:#E08C63;
+    --warm-soft:#3A2620;
+    --signal:#E0A83F;
+    --signal-soft:#3B2E14;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101823;
+  --surface:#17202D;
+  --surface-2:#1E2937;
+  --ink:#E6EDF6;
+  --ink-2:#A9B7C9;
+  --ink-3:#7A889C;
+  --rule:#2A3646;
+  --rule-2:#3A4859;
+  --accent:#6FA8E0;
+  --accent-ink:#A9CCEE;
+  --accent-soft:#1D3149;
+  --warm:#E08C63;
+  --warm-soft:#3A2620;
+  --signal:#E0A83F;
+  --signal-soft:#3B2E14;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none !important}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace}
+
+/* ---------- header ---------- */
+.pagehead{
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+  padding:22px 28px 20px;
+}
+.pagehead .wrap{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 32px}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+  display:block;margin-bottom:6px;
+}
+.pagehead h1{
+  font-size:31px;line-height:1.1;font-weight:600;margin:0;
+  letter-spacing:-.018em;text-wrap:balance;
+}
+.pagehead p{margin:0;color:var(--ink-2);max-width:56ch;font-size:14.5px;flex:1 1 340px}
+
+/* ---------- shell ---------- */
+main{
+  max-width:1400px;margin:0 auto;padding:22px 28px 40px;
+  display:grid;grid-template-columns:302px minmax(0,1fr);gap:22px;align-items:start;
+}
+@media (max-width:1020px){ main{grid-template-columns:minmax(0,1fr)} }
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+}
+.panel > h2{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-3);
+  margin:0;padding:12px 16px 10px;border-bottom:1px solid var(--rule);
+}
+.panel .body{padding:16px}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+@media (max-width:1020px){ .rail{position:static} }
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > label, .flabel{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;
+}
+
+.seg{display:flex;border:1px solid var(--rule-2);border-radius:5px;overflow:hidden}
+.seg button{
+  flex:1;appearance:none;border:0;background:var(--surface);
+  color:var(--ink-2);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;
+  border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+
+select, input[type="number"]{
+  font:inherit;font-family:"IBM Plex Mono", monospace;font-size:13px;
+  color:var(--ink);background:var(--surface);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 8px;width:100%;
+}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+/* ---------- kernel matrix ---------- */
+.kwrap{display:flex;justify-content:center;padding:2px 0 4px}
+.kgrid{display:grid;gap:5px}
+.kcell{
+  width:52px;height:42px;
+  border:1px solid var(--rule-2);border-radius:4px;
+  background:var(--surface-2);
+  font-family:"IBM Plex Mono", monospace;font-size:14px;font-weight:500;
+  color:var(--ink);text-align:center;
+  padding:0;
+  font-variant-numeric:tabular-nums;
+}
+.kgrid.k5 .kcell{width:38px;height:34px;font-size:12.5px}
+.kcell:focus{outline:2px solid var(--accent);outline-offset:1px}
+.kcell.pos{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.kcell.neg{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+.kcell.zero{color:var(--ink-3)}
+.kcell.center{box-shadow:inset 0 0 0 2px var(--signal)}
+
+.presets{display:flex;flex-wrap:wrap;gap:5px}
+.presets button{
+  appearance:none;font:inherit;font-size:12.5px;
+  background:var(--surface-2);color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:20px;padding:4px 11px;cursor:pointer;
+}
+.presets button:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+.presets button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+.divline{
+  display:flex;align-items:baseline;justify-content:center;gap:8px;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;color:var(--ink-2);
+  padding-top:2px;
+}
+.divline strong{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.divline input{width:66px;text-align:center}
+
+.note{font-size:12.5px;line-height:1.45;color:var(--ink-3);margin:8px 0 0}
+.note b{color:var(--ink-2);font-weight:600}
+
+/* ---------- stage ---------- */
+.stage{display:flex;flex-direction:column;gap:16px;min-width:0}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule)}
+.tabs button{
+  appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  font:inherit;font-size:14.5px;font-weight:500;color:var(--ink-3);
+  padding:8px 16px;cursor:pointer;margin-bottom:-1px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tabs .anchor{
+  margin-left:auto;align-self:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;color:var(--ink-3);
+  letter-spacing:.06em;padding-right:4px;
+}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btn{
+  appearance:none;font:inherit;font-size:13.5px;font-weight:500;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:6px 14px;cursor:pointer;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn:focus-visible, .presets button:focus-visible, .seg button:focus-visible, .tabs button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px
+}
+.spacer{flex:1 1 auto}
+.slider{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.slider input{width:110px}
+
+/* ---------- stepper grids ---------- */
+.gridrow{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+.gridbox{display:flex;flex-direction:column;gap:7px}
+.gridcap{
+  font-family:"IBM Plex Mono", monospace;font-size:12px;color:var(--ink-2);
+  display:flex;align-items:baseline;gap:8px;
+}
+.gridcap em{font-style:normal;color:var(--ink-3);font-size:11px}
+.pgrid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);width:max-content}
+.pc{
+  width:31px;height:25px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;
+  font-variant-numeric:tabular-nums;
+  background:var(--surface);color:var(--ink-2);position:relative;
+}
+.pc.pad{opacity:.48;font-style:italic}
+.pc.mid{background:#9AA6B5;color:#FFFFFF}
+.pc.on{background:#3E4C5E;color:#fff;font-weight:500}
+:root[data-theme="dark"] .pc.on{background:#5C6E85}
+:root[data-theme="dark"] .pc.mid{background:#7F8D9E}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .pc.on{background:#5C6E85}
+  :root:not([data-theme="light"]) .pc.mid{background:#7F8D9E}
+}
+.pc.win{box-shadow:inset 0 0 0 2px var(--signal);z-index:2}
+.pc.cur{box-shadow:inset 0 0 0 2px var(--accent);z-index:3}
+.pc.done{color:var(--ink)}
+.pc.empty{background:var(--surface-2);color:transparent}
+.gwrap{overflow-x:auto;padding-bottom:2px}
+
+/* ---------- neighborhood readout ---------- */
+.readout{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:6px;
+  padding:14px 16px;
+}
+.mini{display:flex;flex-direction:column;gap:5px;align-items:center}
+.mini .mlab{
+  font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mgrid{display:grid;gap:2px}
+.mcell{
+  min-width:30px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono", monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--surface);border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+  padding:0 3px;
+}
+.mgrid.k5 .mcell{min-width:25px;height:19px;font-size:9.5px}
+.mcell.pos{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent-soft)}
+.mcell.neg{color:var(--warm);background:var(--warm-soft);border-color:var(--warm-soft)}
+.mcell.padded{font-style:italic;color:var(--ink-3);background:var(--surface-2)}
+.op{font-family:"IBM Plex Mono", monospace;font-size:17px;color:var(--ink-3);align-self:center;padding-top:12px}
+.sumout{display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.sumout .slab{font-family:"IBM Plex Mono", monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sumout .sval{font-family:"IBM Plex Mono", monospace;font-size:22px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.sumout .sexp{font-family:"IBM Plex Mono", monospace;font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- playground ---------- */
+.imgrow{display:flex;flex-wrap:wrap;gap:20px}
+.imgbox{display:flex;flex-direction:column;gap:7px}
+.imgbox canvas{
+  display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface-2);
+  image-rendering:pixelated;max-width:100%;height:auto;cursor:crosshair;
+}
+.optrow{display:flex;flex-wrap:wrap;gap:14px}
+.optrow .field{margin-bottom:0;min-width:150px}
+
+/* ---------- code bar ---------- */
+.codebar{
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.codebar header{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.codebar header span{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600;
+}
+.codebar pre{
+  margin:0;padding:14px 16px;overflow-x:auto;
+  font-family:"IBM Plex Mono", monospace;font-size:13px;line-height:1.6;
+  color:var(--ink);
+}
+.codebar .kw{color:var(--accent)}
+.codebar .cm{color:var(--ink-3);font-style:italic}
+.codebar .num{color:var(--warm)}
+.codebar .hi{color:var(--ink);background:var(--signal-soft);border-radius:3px;padding:0 3px;font-weight:600}
+.codebar .hi .num{color:inherit}
+
+/* ---------- footer ---------- */
+.pagefoot{border-top:1px solid var(--rule);background:var(--surface);margin-top:8px}
+.pagefoot .wrap{max-width:1400px;margin:0 auto;padding:22px 28px 30px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px 32px}
+.pagefoot h3{
+  font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 7px;font-weight:600;
+}
+.pagefoot p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.pagefoot code{font-family:"IBM Plex Mono", monospace;font-size:12.5px;color:var(--ink)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+.up{display:inline-block;margin-bottom:6px;font-family:"IBM Plex Mono", monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-decoration:none}
+.up:hover{color:var(--accent)}
+#view{display:block;border:1px solid var(--rule);border-radius:4px;background:var(--surface);cursor:crosshair;margin:0 auto}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.tcard{display:flex;flex-direction:column;gap:1px;background:var(--surface-2);border:1px solid var(--rule);border-radius:5px;padding:9px 11px}
+.tcard .lab{font-family:"IBM Plex Mono", monospace;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.tcard .big2{font-family:"IBM Plex Mono", monospace;font-size:20px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.tcard.key .big2{color:var(--accent)}
+.tcard.bad .big2{color:var(--warm)}
+.sl{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:8px;align-items:center;font-size:13.5px}
+.sl b{font-family:"IBM Plex Mono",monospace;font-size:14px;text-align:right;color:var(--ink)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2);margin-top:10px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+</style>
+</head>
+<body>
+<header class="pagehead">
+  <div class="wrap">
+    <div>
+      <a class="up" href="index.html">&#8592; Lecture 18 demos</a>
+      <span class="eyebrow">CS 4337 / Lecture 18 / Diffusion in two dimensions</span>
+      <h1>Walk to the Manifold</h1>
+    </div>
+    <p>The lecture's picture of diffusion, made movable. An "image" here has only two pixel values, so it is a point in the plane, and the "real images" are 240 points on a spiral: the manifold. Destroy the spiral with noise, then start from pure noise and walk back, with the same formulas as the lecture's notebook.</p>
+  </div>
+</header>
+
+<main>
+  <div class="rail">
+    <section class="panel">
+      <h2>Direction</h2>
+      <div class="body">
+        <div class="seg" id="mode"><button data-m="destroy" aria-pressed="true">destroy</button><button data-m="generate" aria-pressed="false">generate</button></div>
+        <p class="note" id="mnote"></p>
+      </div>
+    </section>
+    <section class="panel" id="pdestroy">
+      <h2>Noise level</h2>
+      <div class="body">
+        <div class="sl"><input type="range" id="t" min="0" max="999" step="1" value="0"><b id="tv">0</b></div>
+        <label class="chk"><input type="checkbox" id="arrows"> show where the denoiser points</label>
+        <p class="note">Level 0 is the clean data, level 999 is pure noise. The arrows show, for a grid of noisy points, the direction of the best estimate of the clean point.</p>
+      </div>
+    </section>
+    <section class="panel" id="pgenerate" style="display:none">
+      <h2>Steps from noise to data</h2>
+      <div class="body">
+        <div class="seg" id="steps"><button data-s="1000" aria-pressed="false">1000</button><button data-s="100" aria-pressed="true">100</button><button data-s="20" aria-pressed="false">20</button><button data-s="5" aria-pressed="false">5</button></div>
+        <div class="presets" style="margin-top:10px"><button id="play">play</button><button id="one">one step</button><button id="reset">start over</button></div>
+        <p class="note" id="gnote"></p>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Readout</h2>
+      <div class="body"><div class="tally" id="tally"></div></div>
+    </section>
+  </div>
+
+  <div class="stage">
+    <section class="panel">
+      <h2 id="vtitle">The space of all two-pixel images</h2>
+      <div class="body">
+        <canvas id="view"></canvas>
+        <div class="legend"><span><i style="background:var(--accent)"></i>the data: 240 points on a spiral</span><span><i style="background:var(--warm)"></i><span id="lwarm">the data after adding noise</span></span><span id="lprobe">move the pointer over the picture to ask the denoiser about one point</span></div>
+      </div>
+    </section>
+    <div class="codebar">
+      <header><span id="ctitle">the notebook's code</span>
+        <button class="btn" id="copy" style="padding:3px 10px;font-size:12px;margin-left:auto">Copy</button>
+      </header>
+      <pre id="code"></pre>
+    </div>
+  </div>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div><h3>From far away, aim for the middle</h3><p>At a high noise level, switch the arrows on: they all point to the center of the spiral. A very noisy point could have come from any data point, so the best single estimate is the average of all of them. This is the blurry "average digit" of the notebook's first generation steps.</p></div>
+    <div><h3>Up close, aim for the nearest arm</h3><p>At a low noise level each arrow points to the nearest part of the spiral. The decision of where to land is made gradually: first the rough region, then the arm, then the exact place.</p></div>
+    <div><h3>Too few steps lose the variety</h3><p>Half of the data lies on the outer half of the spiral, and with 100 or 1,000 steps half of the generated points land there. With 20 steps it is about 43%, and with 5 steps about 4%: big steps follow the early "aim for the middle" estimates too far, and nearly everything ends on the inner turns.</p></div>
+  </div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   Shared helpers for the CS 4337 interactive pages.
+   Plain ES5 so the files run from file:// in any browser in the room.
+   ------------------------------------------------------------------ */
+
+function el(id) { return document.getElementById(id); }
+
+function mk(tag, cls, txt) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined && txt !== null) n.textContent = txt;
+  return n;
+}
+
+/* ---------- images ---------- */
+
+/* Decodes the inlined base64 assets, then hands back {w,h,rgb,gray} per key.
+   gray is a Float32Array so filter output can go negative before clipping. */
+function loadImages(keys, done) {
+  var out = {}, pending = keys.length;
+  if (!pending) return done(out);
+  keys.forEach(function (k) {
+    var im = new Image();
+    im.onload = function () {
+      var c = document.createElement("canvas");
+      c.width = im.width; c.height = im.height;
+      var g = c.getContext("2d");
+      g.drawImage(im, 0, 0);
+      var d = g.getImageData(0, 0, c.width, c.height).data;
+      var n = c.width * c.height;
+      var gray = new Float32Array(n), rgb = new Uint8ClampedArray(d);
+      for (var i = 0; i < n; i++) {
+        gray[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      }
+      out[k] = { w: c.width, h: c.height, gray: gray, rgb: rgb };
+      if (--pending === 0) done(out);
+    };
+    im.src = IMAGES[k];
+  });
+}
+
+/* Paints a single-channel array. clip=true rounds into 0..255 the way uint8
+   storage would; clip=false shifts by +128 so negatives stay visible. */
+function putGray(cv, arr, w, h, clip) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = clip === false ? arr[i] + 128 : arr[i];
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+function putRGB(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h);
+  im.data.set(arr);
+  g.putImageData(im, 0, 0);
+}
+
+/* Paints a 0/1 mask: 1 -> white, 0 -> black, matching a binary cv image. */
+function putMask(cv, arr, w, h) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data;
+  for (var i = 0; i < w * h; i++) {
+    var v = arr[i] ? 255 : 0;
+    d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+}
+
+/* ---------- borders ---------- */
+
+/* One index, folded back into 0..n-1 by the chosen border rule.
+   Returns -1 for BORDER_CONSTANT, meaning "there is no pixel, use the value". */
+function clampIndex(i, n, mode) {
+  if (i >= 0 && i < n) return i;
+  if (n === 1) return 0;
+  switch (mode) {
+    case "constant":  return -1;
+    case "replicate": return i < 0 ? 0 : n - 1;
+    case "wrap":      return ((i % n) + n) % n;
+    case "reflect":
+      while (i < 0 || i >= n) { if (i < 0) i = -i - 1; if (i >= n) i = 2 * n - i - 1; }
+      return i;
+    default: /* reflect101, filter2D's own default */
+      while (i < 0 || i >= n) { if (i < 0) i = -i; if (i >= n) i = 2 * n - i - 2; }
+      return i;
+  }
+}
+
+/* ---------- filtering ---------- */
+
+/* Correlation, which is what cv.filter2D actually computes. Set flip to get
+   true convolution. k is a flat array of side*side weights. */
+function correlate(src, w, h, k, side, mode, flip, constVal) {
+  var r = side >> 1, out = new Float32Array(w * h), cv0 = constVal || 0;
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var s = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) {
+          var sx = clampIndex(x + dx, w, mode);
+          var val = (sy < 0 || sx < 0) ? cv0 : src[sy * w + sx];
+          var u = flip ? -dy : dy, v = flip ? -dx : dx;
+          s += val * k[(u + r) * side + (v + r)];
+        }
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* A separable pass costs 2k multiplies per pixel instead of k*k. */
+function separable(src, w, h, k1, mode) {
+  var side = k1.length, r = side >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += src[y * w + clampIndex(x + d, w, mode)] * k1[d + r];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -r; d <= r; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * k1[d + r];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+function medianFilter(src, w, h, side, mode) {
+  var r = side >> 1, out = new Float32Array(w * h), buf = new Float32Array(side * side);
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var n = 0;
+      for (var dy = -r; dy <= r; dy++) {
+        var sy = clampIndex(y + dy, h, mode);
+        for (var dx = -r; dx <= r; dx++) buf[n++] = src[sy * w + clampIndex(x + dx, w, mode)];
+      }
+      var a = Array.prototype.slice.call(buf, 0, n).sort(function (p, q) { return p - q; });
+      out[y * w + x] = a[n >> 1];
+    }
+  }
+  return out;
+}
+
+/* cv.getGaussianKernel: a 1D kernel, normalised to sum 1. */
+function gaussian1D(side, sigma) {
+  var r = side >> 1, k = new Float32Array(side), sum = 0;
+  if (!sigma) sigma = 0.3 * ((side - 1) * 0.5 - 1) + 0.8;   // OpenCV's default
+  for (var i = 0; i < side; i++) {
+    k[i] = Math.exp(-((i - r) * (i - r)) / (2 * sigma * sigma));
+    sum += k[i];
+  }
+  for (i = 0; i < side; i++) k[i] /= sum;
+  return k;
+}
+
+/* ---------- histogram ---------- */
+
+function histogram(gray) {
+  var h = new Float64Array(256);
+  for (var i = 0; i < gray.length; i++) {
+    var v = Math.round(gray[i]);
+    h[v < 0 ? 0 : v > 255 ? 255 : v]++;
+  }
+  return h;
+}
+
+/* Within-class variance for every T, which is what Otsu minimises.
+   Returns {v, t, w0, m0, m1} with v[t] = w0*s0^2 + w1*s1^2. */
+function otsuCurve(hist) {
+  var total = 0, sumAll = 0, i;
+  for (i = 0; i < 256; i++) { total += hist[i]; sumAll += i * hist[i]; }
+  var v = new Float64Array(256), w0 = new Float64Array(256),
+      m0 = new Float64Array(256), m1 = new Float64Array(256);
+  var c0 = 0, s0 = 0, best = -1, bestV = Infinity;
+  var varAll = 0;
+  for (i = 0; i < 256; i++) varAll += hist[i] * Math.pow(i - sumAll / total, 2);
+  varAll /= total;
+  for (var t = 0; t < 256; t++) {
+    c0 += hist[t]; s0 += t * hist[t];
+    var c1 = total - c0, mu0 = c0 ? s0 / c0 : 0, mu1 = c1 ? (sumAll - s0) / c1 : 0;
+    w0[t] = c0 / total; m0[t] = mu0; m1[t] = mu1;
+    /* between-class variance is the cheap half; the rest is what is left. */
+    var between = (c0 / total) * (c1 / total) * (mu0 - mu1) * (mu0 - mu1);
+    v[t] = varAll - between;
+    if (c0 && c1 && v[t] < bestV) { bestV = v[t]; best = t; }
+  }
+  return { v: v, t: best, w0: w0, m0: m0, m1: m1, varAll: varAll };
+}
+
+/* ---------- theme-aware canvas drawing ---------- */
+
+var THEME = {};
+function readTheme() {
+  var cs = getComputedStyle(document.documentElement);
+  ["ink", "ink-2", "ink-3", "rule", "rule-2", "accent", "accent-ink", "accent-soft",
+   "warm", "warm-soft", "signal", "signal-soft", "surface", "surface-2", "paper"
+  ].forEach(function (k) { THEME[k] = cs.getPropertyValue("--" + k).trim(); });
+  return THEME;
+}
+
+function onThemeChange(cb) {
+  readTheme();
+  if (window.matchMedia) {
+    var m = window.matchMedia("(prefers-color-scheme: dark)");
+    var h = function () { readTheme(); cb(); };
+    if (m.addEventListener) m.addEventListener("change", h);
+    else if (m.addListener) m.addListener(h);
+  }
+}
+
+/* Canvases are sized in CSS pixels but drawn at device resolution, so the
+   axis text on a projector stays sharp. */
+function fitCanvas(cv, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  cv.style.width = w + "px"; cv.style.height = h + "px";
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  var g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  return g;
+}
+
+/* ---------- code panel ---------- */
+
+var PY_KW = /\b(import|as|for|in|if|else|elif|return|def|not|and|or|True|False|None|while)\b/g;
+
+function hl(code) {
+  var s = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  s = s.replace(/(#[^\n]*)/g, '<span class="cm">$1</span>');
+  s = s.replace(/('[^']*')/g, '<span class="num">$1</span>');
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  s = s.replace(PY_KW, '<span class="kw">$1</span>');
+  s = s.replace(/\b(cv|np|plt)\./g, '<span class="kw">$1</span>.');
+  return s;
+}
+
+/* Every page prints the OpenCV call its controls stand for. */
+function codePanel(id, code) { el(id).innerHTML = hl(code); }
+
+function wireCopy(btn, getText) {
+  btn.addEventListener("click", function () {
+    var t = getText();
+    var ok = function () {
+      var old = btn.textContent;
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(ok, function () {});
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = t; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+}
+
+/* ---------- small utilities ---------- */
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+function fmt(v, n) {
+  if (!isFinite(v)) return "-";
+  var p = Math.pow(10, n === undefined ? 1 : n);
+  return String(Math.round(v * p) / p);
+}
+
+/* A labelled slider that keeps its readout in sync. */
+function bindSlider(inputId, outId, fn, format) {
+  var inp = el(inputId), out = el(outId);
+  var run = function () {
+    if (out) out.textContent = format ? format(+inp.value) : inp.value;
+    fn(+inp.value);
+  };
+  inp.addEventListener("input", run);
+  return run;
+}
+
+/* ---------- connected components ---------- */
+
+/* Labels the non-zero pixels of a binary mask the way
+   cv.connectedComponentsWithStats does: label 0 is the background, new labels
+   are handed out in raster order of the first pixel found, and each entry
+   carries the same left/top/width/height/area that the stats array carries,
+   plus the centroid (the mean column and row of the labelled pixels). */
+function connectedComponents(mask, w, h, connectivity) {
+  var labels = new Int32Array(w * h), stats = [], next = 1;
+  var qx = new Int32Array(w * h), qy = new Int32Array(w * h);
+  var dx = connectivity === 4 ? [1, -1, 0, 0] : [1, -1, 0, 0, 1, 1, -1, -1];
+  var dy = connectivity === 4 ? [0, 0, 1, -1] : [0, 0, 1, -1, 1, -1, 1, -1];
+  for (var y0 = 0; y0 < h; y0++) {
+    for (var x0 = 0; x0 < w; x0++) {
+      var i0 = y0 * w + x0;
+      if (!mask[i0] || labels[i0]) continue;
+      var id = next++, head = 0, tail = 0;
+      qx[0] = x0; qy[0] = y0; tail = 1; labels[i0] = id;
+      var minx = x0, maxx = x0, miny = y0, maxy = y0, area = 0, sx = 0, sy = 0;
+      while (head < tail) {
+        var x = qx[head], y = qy[head]; head++;
+        area++; sx += x; sy += y;
+        if (x < minx) minx = x;
+        if (x > maxx) maxx = x;
+        if (y < miny) miny = y;
+        if (y > maxy) maxy = y;
+        for (var k = 0; k < dx.length; k++) {
+          var nx = x + dx[k], ny = y + dy[k];
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          var j = ny * w + nx;
+          if (mask[j] && !labels[j]) {
+            labels[j] = id; qx[tail] = nx; qy[tail] = ny; tail++;
+          }
+        }
+      }
+      stats.push({
+        label: id, left: minx, top: miny,
+        width: maxx - minx + 1, height: maxy - miny + 1,
+        area: area, cx: sx / area, cy: sy / area
+      });
+    }
+  }
+  return { count: next, labels: labels, stats: stats };
+}
+
+/* The notebook's idiom: the biggest component that is not the background. */
+function largestComponent(cc) {
+  var best = null;
+  for (var i = 0; i < cc.stats.length; i++) {
+    if (!best || cc.stats[i].area > best.area) best = cc.stats[i];
+  }
+  return best;
+}
+
+/* ---------- gradients and edges (lecture 05) ---------- */
+
+/* The 1-D kernel cv.GaussianBlur builds for GaussianBlur(img, (0,0), sigma).
+   OpenCV derives the size from sigma for an 8-bit image as round(6*sigma+1)
+   forced odd, and the weights are cv.getGaussianKernel's, which for an
+   explicit sigma is the plain analytic Gaussian, normalised to sum to one. */
+function gaussianKernelCV(sigma) {
+  var n = Math.round(sigma * 6 + 1) | 1;
+  if (n < 1) n = 1;
+  var r = n >> 1, k = new Float64Array(n), s = 0, i, d;
+  for (i = 0; i < n; i++) { d = i - r; k[i] = Math.exp(-d * d / (2 * sigma * sigma)); s += k[i]; }
+  for (i = 0; i < n; i++) k[i] /= s;
+  return k;
+}
+
+/* Two 1-D passes with different kernels, horizontal first, then vertical.
+   This is how cv.Sobel and cv.GaussianBlur are actually implemented. */
+function sepXY(src, w, h, kx, ky, mode) {
+  var rx = kx.length >> 1, ry = ky.length >> 1;
+  var tmp = new Float32Array(w * h), out = new Float32Array(w * h), x, y, d, s;
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -rx; d <= rx; d++) s += src[y * w + clampIndex(x + d, w, mode)] * kx[d + rx];
+      tmp[y * w + x] = s;
+    }
+  }
+  for (y = 0; y < h; y++) {
+    for (x = 0; x < w; x++) {
+      s = 0;
+      for (d = -ry; d <= ry; d++) s += tmp[clampIndex(y + d, h, mode) * w + x] * ky[d + ry];
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+/* cv.GaussianBlur(img, (0,0), sigma) on an 8-bit image: the result is rounded
+   back into 0..255, which is what the notebook then hands to cv.Sobel. */
+function blurCV(src, w, h, sigma) {
+  if (!(sigma > 0)) return src;
+  var b = sepXY(src, w, h, gaussianKernelCV(sigma), gaussianKernelCV(sigma), "reflect101");
+  var out = new Float32Array(w * h);
+  for (var i = 0; i < w * h; i++) {
+    var v = Math.round(b[i]);
+    out[i] = v < 0 ? 0 : v > 255 ? 255 : v;
+  }
+  return out;
+}
+
+/* cv.Sobel(src, CV_64F, 1, 0, ksize=3) and its dy twin. The kernel is
+   unnormalised, exactly as OpenCV leaves it. */
+function sobel3(src, w, h, dx) {
+  var der = [-1, 0, 1], smo = [1, 2, 1];
+  return dx ? sepXY(src, w, h, der, smo, "reflect101")
+            : sepXY(src, w, h, smo, der, "reflect101");
+}
+
+/* Gradient magnitude and direction. L2 is sqrt(gx^2+gy^2), the L2gradient=True
+   branch of cv.Canny; L1 is |gx|+|gy|, which is what it uses by default. */
+function gradient(src, w, h, l2) {
+  var gx = sobel3(src, w, h, 1), gy = sobel3(src, w, h, 0);
+  var n = w * h, mag = new Float32Array(n), dir = new Float32Array(n);
+  for (var i = 0; i < n; i++) {
+    mag[i] = l2 === false ? Math.abs(gx[i]) + Math.abs(gy[i])
+                          : Math.sqrt(gx[i] * gx[i] + gy[i] * gy[i]);
+    dir[i] = Math.atan2(gy[i], gx[i]);
+  }
+  return { gx: gx, gy: gy, mag: mag, dir: dir };
+}
+
+/* Bilinear sample of a single-channel array, clamping at the border the way the
+   notebook's bilinear_interpolation does. */
+function sampleBilinear(a, w, h, x, y) {
+  var x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+  var x1 = x0 + 1, y1 = y0 + 1;
+  x0 = clamp(x0, 0, w - 1); x1 = clamp(x1, 0, w - 1);
+  y0 = clamp(y0, 0, h - 1); y1 = clamp(y1, 0, h - 1);
+  return a[y0 * w + x0] * (1 - fx) * (1 - fy) + a[y0 * w + x1] * fx * (1 - fy)
+       + a[y1 * w + x0] * (1 - fx) * fy + a[y1 * w + x1] * fx * fy;
+}
+
+/* Non-maxima suppression the way the notebook does it: step one unit forward
+   and one unit back along the gradient, interpolate, and keep the pixel only if
+   it is at least as large as both. cv.Canny quantises the direction into four
+   bins instead, which is why the two results differ slightly. */
+function nmsBilinear(mag, dir, w, h, dist) {
+  var out = new Float32Array(w * h), d = dist || 1;
+  for (var y = 1; y < h - 1; y++) {
+    for (var x = 1; x < w - 1; x++) {
+      var i = y * w + x, a = dir[i], ux = Math.cos(a) * d, uy = Math.sin(a) * d;
+      var c = mag[i];
+      if (c >= sampleBilinear(mag, w, h, x + ux, y + uy) &&
+          c >= sampleBilinear(mag, w, h, x - ux, y - uy)) out[i] = c;
+    }
+  }
+  return out;
+}
+
+/* Hysteresis thresholding, the notebook's hysthresh: everything above t1 is a
+   candidate, and a candidate survives only if its 8-connected component of
+   candidates contains at least one pixel above t2. Returns the mask plus the
+   three populations the page paints in different colours. */
+function hysteresis(sup, w, h, t1, t2) {
+  if (t2 < t1) { var s = t1; t1 = t2; t2 = s; }
+  var n = w * h, cand = new Uint8Array(n), i;
+  for (i = 0; i < n; i++) cand[i] = sup[i] > t1 ? 1 : 0;
+  var cc = connectedComponents(cand, w, h, 8);
+  var strong = new Uint8Array(cc.count);
+  for (i = 0; i < n; i++) if (sup[i] > t2 && cc.labels[i]) strong[cc.labels[i]] = 1;
+  var mask = new Uint8Array(n), nStrong = 0, nRescued = 0, nDropped = 0;
+  for (i = 0; i < n; i++) {
+    if (!cand[i]) continue;
+    if (strong[cc.labels[i]]) {
+      mask[i] = 1;
+      if (sup[i] > t2) nStrong++; else nRescued++;
+    } else nDropped++;
+  }
+  return { mask: mask, labels: cc.labels, strong: strong,
+           nStrong: nStrong, nRescued: nRescued, nDropped: nDropped };
+}
+
+/* ---------- Hough transforms (Lecture 06) ---------- */
+
+/* Colors for marks drawn over a photograph or a heat map. Those look the same in either theme, so these stay fixed instead of following THEME. */
+var OVERLAY = { accent: "#4F81BD", warm: "#E36C0A", hot: "#FF5D5D", light: "#6FB3EF",
+                green: "#42D17A", ring: "#4FC3F7" };
+
+function loadImg(uri) {
+  return new Promise(function (res) {
+    var im = new Image();
+    im.onload = function () { res(im); };
+    im.src = uri;
+  });
+}
+
+/* Reads an edge map image into a flat [x,y,x,y,...] array of its white pixels. */
+function edgePointsFrom(img, w, h) {
+  var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var g = c.getContext("2d", { willReadFrequently: true });
+  g.drawImage(img, 0, 0, w, h);
+  var d = g.getImageData(0, 0, w, h).data, pts = [];
+  for (var y = 0; y < h; y++) for (var x = 0; x < w; x++)
+    if (d[(y * w + x) * 4] > 127) pts.push(x, y);
+  return Int32Array.from(pts);
+}
+
+/* A photograph drawn at its own resolution and shown at cssW pixels wide, shrinking with the page on a narrow screen. */
+function sizeCanvas(cv, w, h, cssW) {
+  cv.width = w; cv.height = h;
+  cv.style.width = (cssW || w) + "px";
+  cv.style.maxWidth = "100%";
+  cv.style.height = "auto";
+  cv.style.imageRendering = "pixelated";
+}
+
+/* cv.HoughLines' accumulator: same padding, same cvRound, same layout. */
+function houghAccum(pts, w, h, rhoStep, thetaStep) {
+  var numangle = Math.round(Math.PI / thetaStep);
+  var numrho = Math.round(((w + h) * 2 + 1) / rhoStep);
+  var irho = 1 / rhoStep, half = (numrho - 1) >> 1;
+  var cosT = new Float64Array(numangle), sinT = new Float64Array(numangle), n;
+  for (n = 0; n < numangle; n++) {
+    cosT[n] = Math.cos(n * thetaStep) * irho;
+    sinT[n] = Math.sin(n * thetaStep) * irho;
+  }
+  var acc = new Int32Array(numangle * numrho);
+  for (var i = 0; i < pts.length; i += 2) {
+    var x = pts[i], y = pts[i + 1];
+    for (n = 0; n < numangle; n++) {
+      var r = Math.round(x * cosT[n] + y * sinT[n]) + half;
+      if (r >= 0 && r < numrho) acc[n * numrho + r]++;
+    }
+  }
+  return { acc: acc, numangle: numangle, numrho: numrho, half: half, rhoStep: rhoStep, thetaStep: thetaStep };
+}
+
+/* Local maxima above threshold, using cv.HoughLines' four-neighbor rule. Each entry is [votes, rho, theta], strongest first. */
+function houghPeaks(A, threshold) {
+  var acc = A.acc, numangle = A.numangle, numrho = A.numrho, out = [];
+  for (var n = 0; n < numangle; n++) for (var r = 0; r < numrho; r++) {
+    var i = n * numrho + r, v = acc[i];
+    if (v <= threshold) continue;
+    if (r > 0 && !(v > acc[i - 1])) continue;
+    if (r < numrho - 1 && !(v >= acc[i + 1])) continue;
+    if (n > 0 && !(v > acc[i - numrho])) continue;
+    if (n < numangle - 1 && !(v >= acc[i + numrho])) continue;
+    out.push([v, (r - A.half) * A.rhoStep, n * A.thetaStep]);
+  }
+  out.sort(function (a, b) { return b[0] - a[0]; });
+  return out;
+}
+
+/* The accumulator as a heat map, theta across and rho down, with the first maxPeaks peaks ringed. Only the rho band that holds votes is drawn: numrho is sized for the worst case (w+h)*2+1 and most of it is always empty. The two axes have unrelated units, so the canvas is stretched into a fixed box. Returns the largest vote count. */
+function drawAccum(cv, A, peaks, maxPeaks, boxW, boxH) {
+  var acc = A.acc, numangle = A.numangle, numrho = A.numrho, g = cv.getContext("2d");
+  var mx = 1, r0 = numrho, r1 = 0, n, r;
+  for (r = 0; r < numrho; r++) {
+    var any = false;
+    for (n = 0; n < numangle; n++) {
+      var v = acc[n * numrho + r];
+      if (v > mx) mx = v;
+      if (v > 0) any = true;
+    }
+    if (any) { if (r < r0) r0 = r; r1 = r; }
+  }
+  if (r0 > r1) { r0 = 0; r1 = numrho - 1; }
+  var band = r1 - r0 + 1;
+  cv.width = numangle; cv.height = band;
+  var im = g.createImageData(numangle, band), d = im.data;
+  for (n = 0; n < numangle; n++) for (r = r0; r <= r1; r++) {
+    var t = Math.pow(acc[n * numrho + r] / mx, 0.55), o = ((r - r0) * numangle + n) * 4;
+    d[o] = 255 * Math.min(1, t * 2.1);
+    d[o + 1] = 255 * Math.max(0, Math.min(1, t * 1.9 - 0.75));
+    d[o + 2] = 255 * Math.max(0, Math.min(1, t < 0.5 ? t * 1.5 : 2.2 * t - 1.1));
+    d[o + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  if (peaks && peaks.length) {
+    g.save(); g.strokeStyle = OVERLAY.ring; g.lineWidth = 1;
+    peaks.slice(0, maxPeaks || 40).forEach(function (p) {
+      var pn = Math.round(p[2] / A.thetaStep), pr = Math.round(p[1] / A.rhoStep) + A.half - r0;
+      g.beginPath(); g.arc(pn + 0.5, pr + 0.5, 3.5, 0, 7); g.stroke();
+    });
+    g.restore();
+  }
+  cv.style.width = (boxW || 300) + "px";
+  cv.style.height = (boxH || 300) + "px";
+  cv.style.maxWidth = "100%";
+  cv.style.imageRendering = "pixelated";
+  return mx;
+}
+
+/* Draws the infinite line (rho, theta) across a w by h canvas. */
+function strokeLine(g, rho, theta, w, h, color, width) {
+  var a = Math.cos(theta), b = Math.sin(theta), L = w + h + 100;
+  var x0 = a * rho, y0 = b * rho;
+  g.strokeStyle = color; g.lineWidth = width || 1.5;
+  g.beginPath();
+  g.moveTo(x0 + L * -b, y0 + L * a);
+  g.lineTo(x0 - L * -b, y0 - L * a);
+  g.stroke();
+}
+
+/* A value the controls just set, marked for codePanelLive to highlight. The markers are two control characters that no printed code ever contains. */
+var LIVE_OPEN = String.fromCharCode(2), LIVE_CLOSE = String.fromCharCode(3);
+function live(v) { return LIVE_OPEN + v + LIVE_CLOSE; }
+
+/* codePanel, with every live() value highlighted, so the argument a control changed stands out in the printed call. */
+function codePanelLive(id, code) {
+  el(id).innerHTML = hl(code).split(LIVE_OPEN).join('<span class="hi">').split(LIVE_CLOSE).join("</span>");
+}
+
+/* Presses whichever preset button in a .presets row matches the controls. */
+function syncPresets(containerId, isOn) {
+  [].forEach.call(el(containerId).querySelectorAll("button"), function (b) {
+    b.setAttribute("aria-pressed", isOn(b) ? "true" : "false");
+  });
+}
+
+/* ---------- template matching (Lecture 07) ---------- */
+
+/* Measured arrays arrive as base64 of their raw bytes, little-endian, the byte order of every machine in the room. */
+function b64Bytes(s) {
+  var bin = atob(s), n = bin.length, out = new Uint8Array(n);
+  for (var i = 0; i < n; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function b64I16(s) { return new Int16Array(b64Bytes(s).buffer); }
+function b64F32(s) { return new Float32Array(b64Bytes(s).buffer); }
+
+/* The four cv.matchTemplate scores for a patch P and a template T of the same size, as cv.matchTemplate(P, T, method)[0, 0] computes them. */
+function matchScores(P, T) {
+  var n = T.length, i, sp = 0, st = 0, sq = 0, cc = 0, pp = 0, tt = 0;
+  for (i = 0; i < n; i++) {
+    var d = P[i] - T[i];
+    sq += d * d; cc += P[i] * T[i]; pp += P[i] * P[i]; tt += T[i] * T[i]; sp += P[i]; st += T[i];
+  }
+  var mp = sp / n, mt = st / n, num = 0, vp = 0, vt = 0;
+  for (i = 0; i < n; i++) {
+    var a = P[i] - mp, b = T[i] - mt;
+    num += a * b; vp += a * a; vt += b * b;
+  }
+  return { sqdiff: sq, ccorr: cc, ccorrNormed: cc / Math.sqrt(pp * tt),
+           ccoeffNormed: vp > 1e-9 * n && vt > 1e-9 * n ? num / Math.sqrt(vp * vt) : 0 };
+}
+
+/* cv.matchTemplate(img, T, cv.TM_CCOEFF_NORMED) for a W by H image and a w by h template: result[y, x] scores the template with its top-left corner at (x, y). The patch sums come from integral images; the cross term needs no patch mean because the centered template sums to zero. A flat patch scores 0, as in OpenCV. */
+function matchNCC(img, W, H, T, w, h) {
+  var n = w * h, i, x, y, mt = 0;
+  for (i = 0; i < n; i++) mt += T[i];
+  mt /= n;
+  var Tc = new Float64Array(n), tn = 0;
+  for (i = 0; i < n; i++) { Tc[i] = T[i] - mt; tn += Tc[i] * Tc[i]; }
+  tn = Math.sqrt(tn);
+  var S = new Float64Array((W + 1) * (H + 1)), S2 = new Float64Array((W + 1) * (H + 1));
+  for (y = 0; y < H; y++) {
+    var rs = 0, rs2 = 0;
+    for (x = 0; x < W; x++) {
+      var v = img[y * W + x];
+      rs += v; rs2 += v * v;
+      S[(y + 1) * (W + 1) + x + 1] = S[y * (W + 1) + x + 1] + rs;
+      S2[(y + 1) * (W + 1) + x + 1] = S2[y * (W + 1) + x + 1] + rs2;
+    }
+  }
+  var RW = W - w + 1, RH = H - h + 1, out = new Float32Array(RW * RH);
+  for (y = 0; y < RH; y++) for (x = 0; x < RW; x++) {
+    var a = y * (W + 1) + x, b = a + w, c = (y + h) * (W + 1) + x, d = c + w;
+    var s1 = S[d] - S[b] - S[c] + S[a], s2 = S2[d] - S2[b] - S2[c] + S2[a];
+    var vp = s2 - s1 * s1 / n;
+    if (vp <= 1e-6 * n) { out[y * RW + x] = 0; continue; }
+    var num = 0, k = 0;
+    for (var j = 0; j < h; j++) {
+      var row = (y + j) * W + x;
+      for (i = 0; i < w; i++) num += img[row + i] * Tc[k++];
+    }
+    out[y * RW + x] = num / (Math.sqrt(vp) * tn);
+  }
+  return { map: out, w: RW, h: RH };
+}
+
+/* Color for a score heat map, t in 0..1; the same ramp as the Hough accumulator. */
+function heatRGB(t) {
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  return [255 * Math.min(1, t * 2.1), 255 * Math.max(0, Math.min(1, t * 1.9 - 0.75)),
+          255 * Math.max(0, Math.min(1, t < 0.5 ? t * 1.5 : 2.2 * t - 1.1))];
+}
+
+/* Paints a score map, lo mapping to black and hi to white-hot. filled, if given, limits the painting to the first filled entries in raster order and leaves the rest at the page background. */
+function putHeat(cv, arr, w, h, lo, hi, filled, scale) {
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d"), im = g.createImageData(w, h), d = im.data, n = w * h;
+  var lim = filled === undefined ? n : filled, sc = scale || 1;
+  for (var i = 0; i < n; i++) {
+    var o = i * 4;
+    if (i >= lim) { d[o] = d[o + 1] = d[o + 2] = 40; d[o + 3] = 255; continue; }
+    var c = heatRGB((arr[i] / sc - lo) / (hi - lo));
+    d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  return g;
+}
+
+function strokeBox(g, x, y, w, h, color, lw) {
+  g.lineWidth = (lw || 2) + 2; g.strokeStyle = "rgba(0,0,0,.55)";
+  g.strokeRect(x, y, w, h);
+  g.lineWidth = lw || 2; g.strokeStyle = color;
+  g.strokeRect(x, y, w, h);
+}
+
+</script>
+<script>
+var DATA = {"manifold":{"points":[[0.060343,0.046203],[0.061693,0.05039],[0.062837,0.054706],[0.063767,0.059141],[0.064478,0.063686],[0.064964,0.068332],[0.065219,0.073069],[0.065237,0.077886],[0.065016,0.082775],[0.064549,0.087723],[0.063833,0.092721],[0.062864,0.097758],[0.06164,0.102822],[0.060158,0.107903],[0.058415,0.112989],[0.056411,0.11807],[0.054143,0.123132],[0.051612,0.128166],[0.048816,0.133158],[0.045756,0.138098],[0.042432,0.142974],[0.038846,0.147774],[0.034999,0.152487],[0.030894,0.1571],[0.026532,0.161602],[0.021918,0.165982],[0.017053,0.170227],[0.011944,0.174328],[0.006592,0.178271],[0.001005,0.182047],[-0.004813,0.185645],[-0.010857,0.189053],[-0.017119,0.19226],[-0.023593,0.195258],[-0.030272,0.198034],[-0.037149,0.20058],[-0.044215,0.202887],[-0.051462,0.204943],[-0.058881,0.206741],[-0.066463,0.208272],[-0.074198,0.209526],[-0.082077,0.210497],[-0.090089,0.211177],[-0.098223,0.211557],[-0.106469,0.211631],[-0.114814,0.211393],[-0.123249,0.210836],[-0.13176,0.209955],[-0.140335,0.208744],[-0.148963,0.207198],[-0.15763,0.205314],[-0.166323,0.203086],[-0.17503,0.200512],[-0.183738,0.197588],[-0.192432,0.194313],[-0.201099,0.190683],[-0.209725,0.186699],[-0.218297,0.182358],[-0.226801,0.17766],[-0.235222,0.172606],[-0.243547,0.167195],[-0.251761,0.16143],[-0.259851,0.155312],[-0.267801,0.148843],[-0.275599,0.142025],[-0.283229,0.134863],[-0.290678,0.12736],[-0.297933,0.119521],[-0.304978,0.11135],[-0.3118,0.102853],[-0.318387,0.094036],[-0.324724,0.084905],[-0.330798,0.075468],[-0.336596,0.065733],[-0.342105,0.055706],[-0.347313,0.045398],[-0.352208,0.034817],[-0.356777,0.023972],[-0.361009,0.012875],[-0.364892,0.001535],[-0.368416,-0.010037],[-0.371569,-0.021828],[-0.374341,-0.033827],[-0.376722,-0.046022],[-0.378703,-0.0584],[-0.380275,-0.070947],[-0.381429,-0.08365],[-0.382156,-0.096495],[-0.38245,-0.109467],[-0.382302,-0.122553],[-0.381705,-0.135736],[-0.380655,-0.149001],[-0.379144,-0.162334],[-0.377169,-0.175717],[-0.374723,-0.189135],[-0.371803,-0.202571],[-0.368406,-0.216009],[-0.364528,-0.229432],[-0.360167,-0.242822],[-0.355322,-0.256164],[-0.349991,-0.269438],[-0.344174,-0.282628],[-0.33787,-0.295717],[-0.331082,-0.308686],[-0.323809,-0.321518],[-0.316054,-0.334196],[-0.307819,-0.346701],[-0.299109,-0.359016],[-0.289926,-0.371124],[-0.280275,-0.383006],[-0.270162,-0.394645],[-0.259591,-0.406024],[-0.248571,-0.417126],[-0.237107,-0.427933],[-0.225208,-0.438428],[-0.212882,-0.448595],[-0.200137,-0.458417],[-0.186984,-0.467878],[-0.173433,-0.476961],[-0.159494,-0.485652],[-0.145179,-0.493935],[-0.130499,-0.501794],[-0.115469,-0.509215],[-0.1001,-0.516183],[-0.084406,-0.522685],[-0.068402,-0.528707],[-0.052102,-0.534235],[-0.035522,-0.539258],[-0.018677,-0.543763],[-0.001584,-0.547738],[0.01574,-0.551173],[0.033279,-0.554056],[0.051015,-0.556377],[0.068928,-0.558128],[0.087002,-0.559299],[0.105217,-0.559881],[0.123554,-0.559868],[0.141994,-0.559251],[0.160516,-0.558025],[0.1791,-0.556184],[0.197726,-0.553723],[0.216373,-0.550637],[0.23502,-0.546922],[0.253647,-0.542576],[0.27223,-0.537597],[0.29075,-0.531982],[0.309184,-0.525731],[0.327511,-0.518844],[0.345708,-0.511321],[0.363754,-0.503163],[0.381627,-0.494374],[0.399304,-0.484956],[0.416764,-0.474912],[0.433985,-0.464247],[0.450946,-0.452965],[0.467623,-0.441074],[0.483996,-0.42858],[0.500042,-0.41549],[0.515742,-0.401812],[0.531072,-0.387556],[0.546014,-0.372731],[0.560545,-0.357347],[0.574646,-0.341417],[0.588296,-0.324951],[0.601476,-0.307963],[0.614166,-0.290465],[0.626347,-0.272473],[0.638001,-0.254],[0.649109,-0.235063],[0.659653,-0.215677],[0.669617,-0.19586],[0.678984,-0.175628],[0.687737,-0.155],[0.695861,-0.133994],[0.70334,-0.112631],[0.710161,-0.090928],[0.716308,-0.068908],[0.72177,-0.046591],[0.726533,-0.023999],[0.730585,-0.001152],[0.733915,0.021925],[0.736513,0.04521],[0.738369,0.06868],[0.739474,0.092311],[0.739819,0.11608],[0.739397,0.13996],[0.738202,0.163928],[0.736227,0.187958],[0.733467,0.212026],[0.729919,0.236105],[0.725578,0.260169],[0.720442,0.284192],[0.71451,0.308148],[0.70778,0.332011],[0.700253,0.355754],[0.69193,0.37935],[0.682812,0.402773],[0.672902,0.425995],[0.662204,0.448991],[0.650723,0.471733],[0.638463,0.494195],[0.625431,0.51635],[0.611635,0.538172],[0.597082,0.559635],[0.581782,0.580713],[0.565745,0.601379],[0.54898,0.621608],[0.531501,0.641375],[0.513319,0.660654],[0.494448,0.679421],[0.474902,0.697653],[0.454697,0.715323],[0.433848,0.732411],[0.412373,0.748891],[0.390289,0.764742],[0.367614,0.779941],[0.344367,0.794468],[0.32057,0.8083],[0.296241,0.821418],[0.271404,0.833803],[0.246079,0.845434],[0.220291,0.856294],[0.194062,0.866364],[0.167417,0.875628],[0.14038,0.88407],[0.112978,0.891674],[0.085236,0.898426],[0.057181,0.904311],[0.02884,0.909317],[0.00024,0.913431],[-0.02859,0.916642],[-0.057621,0.91894],[-0.086825,0.920315],[-0.116171,0.920759],[-0.145631,0.920264],[-0.175175,0.918823],[-0.204771,0.916431],[-0.234389,0.913082],[-0.263997,0.908774],[-0.293566,0.903504]],"alpha_bar":"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","ref":[{"x":[-0.42907026,-1.12587695],"t":999,"s":989,"z":[-1.1078146,2.01391558],"x0":[0.0956340196,0.0528183968],"next":[-0.8607376399,-0.158507361]},{"x":[0.89624186,-0.34812174],"t":700,"s":650,"z":[0.57051573,1.61158909],"x0":[0.1054876511,0.0498724596],"next":[1.0388315889,0.8866587723]},{"x":[2.77859739,-0.99961625],"t":400,"s":350,"z":[0.51774063,-0.27955104],"x0":[0.2934171313,-0.0228742728],"next":[2.377860453,-0.8876606257]},{"x":[1.14039503,0.17340913],"t":150,"s":100,"z":[1.07624084,-0.52589905],"x0":[0.5528771167,0.1266105166],"next":[1.0846061417,0.0192823567]},{"x":[0.10429264,-0.51264527],"t":30,"s":20,"z":[0.01657244,-0.7684165],"x0":[0.0995098477,-0.547443711],"next":[0.1028613534,-0.5724748841]},{"x":[0.12634626,0.18882198],"t":999,"s":749,"z":[-0.06130998,-0.01474794],"x0":[0.0962359553,0.0543929238],"next":[-0.0415143036,0.0091308999]},{"x":[0.59948935,-0.74881081],"t":500,"s":250,"z":[-0.15348328,0.05616609],"x0":[0.1148309699,0.0145344386],"next":[0.0946824674,-0.1030973064]}]}};
+var M = DATA.manifold, PTS = M.points, NP = PTS.length, AB = b64F32(M.alpha_bar), T = 1000, R = 2.7, NPART = 400;
+function rng(seed) { var a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function gauss(u) { return function () { var a = 0; while (a === 0) a = u(); return Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * u()); }; }
+/* the best estimate of the clean point for a noisy point (x, y) at level t: the data points' mean, weighted by how likely each one produced it */
+function denoise(x, y, t) {
+  var a = AB[t], sa = Math.sqrt(a), v = 2 * (1 - a), best = -Infinity, i, lw = new Float64Array(NP);
+  for (i = 0; i < NP; i++) { var dx = x - sa * PTS[i][0], dy = y - sa * PTS[i][1]; lw[i] = -(dx * dx + dy * dy) / v; if (lw[i] > best) best = lw[i]; }
+  var sw = 0, sx = 0, sy = 0;
+  for (i = 0; i < NP; i++) { var w = Math.exp(lw[i] - best); sw += w; sx += w * PTS[i][0]; sy += w * PTS[i][1]; }
+  return [sx / sw, sy / sw];
+}
+/* one step of the notebook's generate(): estimate the clean point, then go to the lower noise level s */
+function stepPoint(x, y, t, s, zx, zy) {
+  var a = AB[t], b = AB[s], e = denoise(x, y, t);
+  var nx = (x - Math.sqrt(a) * e[0]) / Math.sqrt(1 - a), ny = (y - Math.sqrt(a) * e[1]) / Math.sqrt(1 - a);
+  var fresh = Math.sqrt((1 - b) / (1 - a) * (1 - a / b)), keep = Math.sqrt(Math.max(0, 1 - b - fresh * fresh));
+  return [Math.sqrt(b) * e[0] + keep * nx + fresh * zx, Math.sqrt(b) * e[1] + keep * ny + fresh * zy];
+}
+function levels(steps) { var out = []; for (var j = 0; j < steps; j++) out.push(Math.round((T - 1) * (1 - j / (steps - 1)))); return out; }
+var NEAR = 0;
+function nearest(x, y) { var best = Infinity; for (var i = 0; i < NP; i++) { var dx = x - PTS[i][0], dy = y - PTS[i][1], d = dx * dx + dy * dy; if (d < best) { best = d; NEAR = i; } } return Math.sqrt(best); }
+
+var EPS = (function () { var g = gauss(rng(7)), out = []; for (var i = 0; i < NP; i++) out.push([g(), g()]); return out; })();
+var S = { mode: "destroy", t: 0, arrows: false, steps: 100, j: 0, lv: null, part: null, g: null, timer: null, probe: null, done: false };
+function startOver() {
+  var g = gauss(rng(18)); S.g = g; S.part = [];
+  for (var i = 0; i < NPART; i++) S.part.push([g(), g()]);
+  S.lv = levels(S.steps); S.j = 0; S.done = false;
+}
+function advance() {
+  if (S.done) return;
+  var t = S.lv[S.j], i, p;
+  if (S.j === S.lv.length - 1) { for (i = 0; i < NPART; i++) { p = S.part[i]; S.part[i] = denoise(p[0], p[1], t); } S.done = true; return; }
+  var s = S.lv[S.j + 1];
+  for (i = 0; i < NPART; i++) { p = S.part[i]; S.part[i] = stepPoint(p[0], p[1], t, s, S.g(), S.g()); }
+  S.j++;
+}
+function render() {
+  readTheme();
+  var cv = el("view"), side = Math.round(Math.min(cv.parentNode.clientWidth - 34, 620)), g = fitCanvas(cv, side, side);
+  function X(v) { return (v + R) / (2 * R) * side; }
+  function Y(v) { return (R - v) / (2 * R) * side; }
+  g.strokeStyle = THEME.rule; g.lineWidth = 1;
+  for (var k = -2; k <= 2; k++) { g.beginPath(); g.moveTo(X(k), 0); g.lineTo(X(k), side); g.moveTo(0, Y(k)); g.lineTo(side, Y(k)); g.stroke(); }
+  g.fillStyle = THEME["ink-3"]; g.font = "12px 'IBM Plex Mono', monospace"; g.textAlign = "left";
+  for (k = -2; k <= 2; k++) { g.fillText(String(k), X(k) + 3, Y(0) + 13); if (k) g.fillText(String(k), X(0) + 3, Y(k) + 13); }
+  var t = S.mode === "destroy" ? S.t : (S.done ? 0 : S.lv[S.j]), i;
+  if (S.mode === "destroy" && S.arrows) {
+    g.strokeStyle = THEME["ink-3"]; g.fillStyle = THEME["ink-3"]; g.lineWidth = 1.3;
+    for (var a = -2.4; a <= 2.41; a += 0.4) for (var b = -2.4; b <= 2.41; b += 0.4) {
+      var e = denoise(a, b, Math.max(t, 1)), dx = e[0] - a, dy = e[1] - b, len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 1e-6) continue;
+      var L = Math.min(0.32, len * 0.45), ux = dx / len, uy = dy / len, x1 = X(a), y1 = Y(b), x2 = X(a + ux * L), y2 = Y(b + uy * L);
+      g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+      var ang = Math.atan2(y2 - y1, x2 - x1); g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 6 * Math.cos(ang - 0.45), y2 - 6 * Math.sin(ang - 0.45)); g.lineTo(x2 - 6 * Math.cos(ang + 0.45), y2 - 6 * Math.sin(ang + 0.45)); g.closePath(); g.fill();
+    }
+  }
+  g.fillStyle = THEME.accent; g.globalAlpha = 0.85;
+  for (i = 0; i < NP; i++) { g.beginPath(); g.arc(X(PTS[i][0]), Y(PTS[i][1]), 2.6, 0, 7); g.fill(); }
+  g.globalAlpha = 0.8; g.fillStyle = THEME.warm;
+  var sum = 0, n = 0, outer = 0, pts;
+  if (S.mode === "destroy") {
+    var sa = Math.sqrt(AB[t]), sn = Math.sqrt(1 - AB[t]); pts = [];
+    if (t > 0) for (i = 0; i < NP; i++) pts.push([sa * PTS[i][0] + sn * EPS[i][0], sa * PTS[i][1] + sn * EPS[i][1]]);
+  } else pts = S.part;
+  for (i = 0; i < pts.length; i++) { g.beginPath(); g.arc(X(pts[i][0]), Y(pts[i][1]), 3, 0, 7); g.fill(); sum += nearest(pts[i][0], pts[i][1]); n++; if (NEAR >= NP / 2) outer++; }
+  g.globalAlpha = 1;
+  var probeText = "move the pointer over the picture to ask the denoiser about one point";
+  if (S.probe) {
+    var pe = denoise(S.probe[0], S.probe[1], Math.max(t, 1));
+    g.strokeStyle = THEME.signal || THEME.ink; g.lineWidth = 2; g.beginPath(); g.moveTo(X(S.probe[0]), Y(S.probe[1])); g.lineTo(X(pe[0]), Y(pe[1])); g.stroke();
+    g.fillStyle = THEME.signal || THEME.ink; g.beginPath(); g.arc(X(pe[0]), Y(pe[1]), 5, 0, 7); g.fill();
+    g.strokeStyle = THEME.ink; g.lineWidth = 1.5; g.beginPath(); g.arc(X(S.probe[0]), Y(S.probe[1]), 5, 0, 7); g.stroke();
+    probeText = "a noisy point at (" + S.probe[0].toFixed(2) + ", " + S.probe[1].toFixed(2) + ") at level " + Math.max(t, 1) + ": the best estimate of its clean point is (" + pe[0].toFixed(2) + ", " + pe[1].toFixed(2) + ")";
+  }
+  el("lprobe").textContent = probeText;
+  var mean = n ? sum / n : 0, left = Math.sqrt(AB[t]);
+  var cards = '<div class="tcard key"><span class="lab">noise level t</span><span class="big2">' + t + '</span></div>' +
+    '<div class="tcard"><span class="lab">share of the data left</span><span class="big2">' + left.toFixed(2) + '</span></div>' +
+    '<div class="tcard ' + (mean > 0.05 ? "bad" : "") + '"><span class="lab">mean distance to the spiral</span><span class="big2">' + mean.toFixed(3) + '</span></div>';
+  if (S.mode === "generate" && S.done) cards += '<div class="tcard ' + (outer / n < 0.4 ? "bad" : "") + '"><span class="lab">landed on the outer half</span><span class="big2">' + Math.round(100 * outer / n) + '%</span></div>';
+  if (S.mode === "generate") cards += '<div class="tcard"><span class="lab">step</span><span class="big2">' + (S.done ? S.lv.length : S.j) + ' / ' + S.lv.length + '</span></div>';
+  el("tally").innerHTML = cards;
+  el("pdestroy").style.display = S.mode === "destroy" ? "" : "none";
+  el("pgenerate").style.display = S.mode === "generate" ? "" : "none";
+  el("lwarm").textContent = S.mode === "destroy" ? "the data after adding noise" : NPART + " points that started as pure noise";
+  el("mnote").textContent = S.mode === "destroy" ? "Adding noise needs no learning: mix every point with random numbers." : "Start from random points and remove the noise in steps. Each step asks the denoiser for an estimate of the clean point.";
+  el("gnote").textContent = S.done ? "Finished: the last step keeps the estimate itself." : (S.j === 0 ? "Every point starts as pure noise, at level 999." : "Going from level " + S.lv[S.j - 1] + " to " + S.lv[S.j] + ".");
+  el("tv").textContent = S.t;
+  syncPresets("mode", function (b) { return b.getAttribute("data-m") === S.mode; });
+  syncPresets("steps", function (b) { return +b.getAttribute("data-s") === S.steps; });
+  if (S.mode === "destroy") {
+    el("ctitle").textContent = "the notebook's add_noise, for one level";
+    codePanelLive("code",
+      "t = " + live(S.t) + "                                  # the noise level, 0 to 999\n" +
+      "keep = alpha_bar[t].sqrt()               # " + left.toFixed(3) + ": how much of the clean point is left\n" +
+      "noise = torch.randn_like(x0)             # random numbers with mean 0 and standard deviation 1\n" +
+      "x_t = keep * x0 + (1 - alpha_bar[t]).sqrt() * noise      # the second factor is " + Math.sqrt(1 - AB[t]).toFixed(3));
+  } else {
+    var tt = S.done ? 0 : S.lv[S.j], ss = S.done || S.j === S.lv.length - 1 ? 0 : S.lv[S.j + 1];
+    el("ctitle").textContent = "one step of the notebook's generate()";
+    codePanelLive("code",
+      "levels = torch.linspace(999, 0, " + live(S.steps) + ").round().long()     # the noise levels visited\n" +
+      "t, s = " + live(tt) + ", " + live(ss) + "                                   # this step goes from level t to level s\n" +
+      "x0 = (x - (1 - alpha_bar[t]).sqrt() * noise) / alpha_bar[t].sqrt()        # the estimate of the clean point\n" +
+      "noise = (x - alpha_bar[t].sqrt() * x0) / (1 - alpha_bar[t]).sqrt()\n" +
+      "fresh = ((1 - alpha_bar[s]) / (1 - alpha_bar[t]) * (1 - alpha_bar[t] / alpha_bar[s])).sqrt()\n" +
+      "x = alpha_bar[s].sqrt() * x0 + (1 - alpha_bar[s] - fresh ** 2).sqrt() * noise + fresh * torch.randn_like(x)\n" +
+      "# in the notebook a U-Net predicts the noise; here the estimate is computed exactly from the 240 data points");
+  }
+  window._ro = { t: t, mean: mean, done: S.done, j: S.j, outer: n ? outer / n : 0 };
+}
+function stop() { if (S.timer) { clearInterval(S.timer); S.timer = null; el("play").textContent = "play"; } }
+function runAll() { while (!S.done) advance(); }
+[].forEach.call(document.querySelectorAll("#mode button"), function (b) { b.addEventListener("click", function () { stop(); S.mode = b.getAttribute("data-m"); if (S.mode === "generate" && !S.part) startOver(); render(); }); });
+[].forEach.call(document.querySelectorAll("#steps button"), function (b) { b.addEventListener("click", function () { stop(); S.steps = +b.getAttribute("data-s"); startOver(); render(); }); });
+el("t").addEventListener("input", function () { S.t = +el("t").value; render(); });
+el("arrows").addEventListener("change", function () { S.arrows = el("arrows").checked; render(); });
+el("play").addEventListener("click", function () {
+  if (S.timer) { stop(); return; }
+  if (S.done) startOver();
+  el("play").textContent = "pause";
+  var per = S.steps >= 1000 ? 10 : 1, wait = S.steps >= 100 ? 40 : S.steps === 20 ? 250 : 700;
+  S.timer = setInterval(function () { for (var k = 0; k < per; k++) advance(); render(); if (S.done) stop(); }, wait);
+});
+el("one").addEventListener("click", function () { stop(); advance(); render(); });
+el("reset").addEventListener("click", function () { stop(); startOver(); render(); });
+el("view").addEventListener("mousemove", function (ev) { var r = ev.currentTarget.getBoundingClientRect(); S.probe = [(ev.clientX - r.left) / r.width * 2 * R - R, R - (ev.clientY - r.top) / r.height * 2 * R]; if (!S.timer) render(); });
+el("view").addEventListener("mouseleave", function () { S.probe = null; if (!S.timer) render(); });
+window._check = function () {
+  var worst = 0;
+  M.ref.forEach(function (q) {
+    var e = denoise(q.x[0], q.x[1], q.t), n = stepPoint(q.x[0], q.x[1], q.t, q.s, q.z[0], q.z[1]);
+    worst = Math.max(worst, Math.abs(e[0] - q.x0[0]), Math.abs(e[1] - q.x0[1]), Math.abs(n[0] - q.next[0]), Math.abs(n[1] - q.next[1]));
+  });
+  return worst;
+};
+window._final = function (steps) { S.mode = "generate"; S.steps = steps; startOver(); runAll(); render(); return [window._ro.mean, window._ro.outer]; };
+wireCopy(el("copy"), function () { return el("code").textContent; });
+onThemeChange(render);
+window.addEventListener("resize", render);
+render();
+</script>
+</body>
+</html>
